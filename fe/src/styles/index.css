@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@font-face {
+  font-family: 'Robot';
+  src: url('../assets/Roboto-Light.ttf');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Robot';
+  src: url('../assets/Roboto-Regular.ttf');
+  font-weight: 700;
+}
+
+:root{
+  font-family: 'Robot', sans-serif, system-ui;
+}
