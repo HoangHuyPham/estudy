@@ -1,0 +1,49 @@
+.home-page {
+    padding: 2rem;
+    font-family: Arial, sans-serif;
+}
+
+.home-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.featured-courses h2,
+.why-choose-us h2 {
+    margin-bottom: 1rem;
+}
+
+.course-list {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.course-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    width: 300px;
+    background-color: #fff;
+}
+
+.course-card button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.course-card button:hover {
+    background-color: #0056b3;
+}
+
+.why-choose-us {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
