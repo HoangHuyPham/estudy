@@ -4,22 +4,25 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
-import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.EqualsAndHashCode.Include;
 
 @Entity
 @NoArgsConstructor
@@ -28,19 +31,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name="instructor")
-public class Instructor {
+@Table(name="section")
+public class Section {
     @Id
+    @GeneratedValue
+    @UuidGenerator
     @Include
     private UUID id;
-    private String description;
+    private String name;
+    private int ordinal;
 
-    @OneToOne
-    @JoinColumn(name="userId", nullable = true)
-    @MapsId
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "courseId", foreignKey = @ForeignKey(name = "courseId"))
+    private Course course;
 
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
     @Default
-    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Course> uploadCourses = new HashSet<>();
+    private Set<Lecture> lectures = new HashSet<>();
 }
