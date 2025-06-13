@@ -1,19 +1,20 @@
 package vn.edu.hcmuaf.be.entity;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -29,6 +30,7 @@ import lombok.EqualsAndHashCode.Include;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue
@@ -56,6 +58,12 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval=true)
     private Customer customer;
+
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval=true)
+    private Set<Gift> senders;
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval=true)
+    private Set<Gift> receivers;
 
     public void addRole(Role role){
         this.role = role;
