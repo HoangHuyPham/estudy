@@ -39,6 +39,10 @@
       "@routes": ["./src/routes"],
       "@layouts/*": ["./src/layouts/*"],
       "@layouts": ["./src/layouts"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@interfaces": ["./src/interfaces"],
+      "@requests/*": ["./src/requests/*"],
+      "@requests": ["./src/requests"],
     },
   },
   "include": ["src"]

@@ -15,6 +15,7 @@ export default defineConfig({
       "@pages": path.resolve(__dirname, "./src/pages"),
       "@routes": path.resolve(__dirname, "./src/routes"),
       "@layouts": path.resolve(__dirname, "./src/layouts"),
+      "@interfaces": path.resolve(__dirname, "./src/interfaces"),
     }
   },
   plugins: [react(), tailwindcss()],
