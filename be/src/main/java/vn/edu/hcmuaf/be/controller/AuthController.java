@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import vn.edu.hcmuaf.be.dto.ApiResponse;
 import vn.edu.hcmuaf.be.dto.login.LoginRequestDTO;
 import vn.edu.hcmuaf.be.dto.login.LoginResponseDTO;
 import vn.edu.hcmuaf.be.entity.User;
@@ -26,11 +27,16 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping(value = "login" , produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto){
+    public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequestDTO dto){
        
         User existUser = userRepository.findByusername(dto.getUsername());
         if (existUser != null && BCrypt.checkpw(dto.getPassword(), existUser.getPassword())){
-            return new ResponseEntity<LoginResponseDTO>(new LoginResponseDTO(jwtUtil.generateToken(existUser)), HttpStatus.OK);
+            return new ResponseEntity<ApiResponse<?>>(
+                ApiResponse.builder()
+                .message("success")
+                .data(new LoginResponseDTO(jwtUtil.generateToken(existUser)))
+                .build()
+            , HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
