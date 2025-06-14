@@ -10,6 +10,7 @@ export const AppRoutes: React.FC = () => {
             {/* Public Route  */}
             <Route>
                 <Route index element={<Home/>} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/login" element={<Login onClose={function(): void {
                     throw new Error("Function not implemented.")
                 } } />} />
