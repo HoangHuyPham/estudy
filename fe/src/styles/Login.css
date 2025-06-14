@@ -1,0 +1,5 @@
+@import '../styles/Home.css';
+
+.login-form {
+    border-left: 6px solid #007bff;
+}

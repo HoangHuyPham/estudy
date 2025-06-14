@@ -25,6 +25,26 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @PostMapping(value = "/register",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO dto) {
+        if (userRepository.findByusername(dto.getUsername()) != null) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Username đã tồn tại");
+        }
+        String hashed = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
+        User u = new User();
+        u.setUsername(dto.getUsername());
+        u.setPassword(hashed);
+
+        userRepository.save(u);
+
+        String token = jwtUtil.generateToken(u);
+        return ResponseEntity.ok(new LoginResponseDTO(token));
+    }
+
     @PostMapping(value = "login" , produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO dto){
        
