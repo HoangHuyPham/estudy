@@ -12,11 +12,17 @@ import lombok.Setter;
 @Setter
 public class CustomConfig {
     private Jwt jwt;
+    private Upload upload;
 
     @Getter
     @Setter
-    public static class Jwt{
+    public static class Jwt {
         private String key;
     }
-}
 
+    @Getter
+    @Setter
+    public static class Upload {
+        private String path;
+    }
+}
