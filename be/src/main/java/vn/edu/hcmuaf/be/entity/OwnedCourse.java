@@ -32,33 +32,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name="course")
-public class Course {
+@Table(name="owned-course")
+public class OwnedCourse {
     @Id
     @Include
     private UUID id;
-    private String name;
-    private String description;
-    @Default
-    @Enumerated(EnumType.STRING)
-    private Language language = Language.ENGLISH;
-    private long duration;
 
     @ManyToOne
-    @JoinColumn(name = "instructorId", foreignKey = @ForeignKey(name = "instructorId"))
-    private Instructor instructor;
+    @JoinColumn(name = "courseId", foreignKey = @ForeignKey(name = "courseId"))
+    private Course course;
 
     @ManyToOne
     @JoinColumn(name = "customerId", foreignKey = @ForeignKey(name = "customerId"))
     private Customer customer;
-
-    @OneToOne(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Image preview;
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Default
-    private Set<Section> sections = new HashSet<>();
-
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Gift> courses;
 }

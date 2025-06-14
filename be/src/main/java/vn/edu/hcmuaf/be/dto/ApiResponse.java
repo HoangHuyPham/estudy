@@ -1,10 +1,10 @@
 package vn.edu.hcmuaf.be.dto;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 public class ApiResponse<T> {
     private T data;
     private String message;

@@ -6,8 +6,10 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import jakarta.transaction.Transactional;
+import vn.edu.hcmuaf.be.entity.Course;
 import vn.edu.hcmuaf.be.entity.Role;
 import vn.edu.hcmuaf.be.entity.User;
+import vn.edu.hcmuaf.be.entity.enums.Language;
 import vn.edu.hcmuaf.be.repository.UserRepository;
 
 @Component
@@ -17,7 +19,6 @@ public class DataSeeder implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Override
-    @Transactional
     public void run(String... args) {
         System.out.println("Data seeder phase");
 

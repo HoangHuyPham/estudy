@@ -43,5 +43,5 @@ public class Customer {
 
     @Default
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Course> ownedCourses = new HashSet<>();
+    private Set<OwnedCourse> ownedCourses = new HashSet<>();
 }
