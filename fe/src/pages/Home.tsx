@@ -9,7 +9,7 @@ import { useUserContext } from '../../contexts/hooks';
 import { toast } from 'react-toastify';
 import { USER_ACTION } from '../../contexts/UserContext';
 
-const Home: React.FC = () => {
+export const Home: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [totalItems, setTotalItems] = useState(0)
@@ -103,12 +103,12 @@ const Home: React.FC = () => {
         KeyWord: keywordDebounced
       }
     try {
-      const { data, status } = await get({
-        url: Endpoint.PRODUCT_URL,
-        params: params
-      })
-      setTotalItems(data.totalItems)
-      setProducts([...data.items])
+      // const { data, status } = await get({
+      //   url: Endpoint.PRODUCT_URL,
+      //   params: params
+      // })
+      // setTotalItems(data.totalItems)
+      // setProducts([...data.items])
     } catch (error) {
       setTotalItems(0)
       setProducts([])
@@ -194,7 +194,4 @@ const Home: React.FC = () => {
 
 
     </>
-  )
 }
-
-export default Home

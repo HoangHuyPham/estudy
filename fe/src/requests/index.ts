@@ -28,7 +28,7 @@ class AppRequest {
                 baseURL: "http://localhost:8080/"
             })
             axiosInstance.interceptors.request.use(
-                config=>{
+                (config: { headers: { Authorization: string | null; }; })=>{
                     config.headers.Authorization = localStorage.getItem("jwt")
                     return config
                 },

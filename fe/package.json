@@ -14,7 +14,7 @@
     "@tailwindcss/vite": "^4.0.15",
     "@types/node": "^22.13.13",
     "antd": "^5.26.0",
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^7.4.0",

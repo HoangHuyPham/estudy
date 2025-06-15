@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import '../styles/Login.css';
 import { useNavigate } from 'react-router';
+import axiosClient from '../api/axiosClient';
+import {AxiosError} from "axios"; // dùng client đã config
 
 interface Props {
     onClose: () => void;
 }
-
-const API_BASE = 'http://localhost:8080/api/auth';
 
 export const Login: React.FC<Props> = ({ onClose }) => {
     const [username, setUsername] = useState('');
@@ -21,19 +21,12 @@ export const Login: React.FC<Props> = ({ onClose }) => {
         setMessage('');
 
         try {
-            const response = await fetch(`${API_BASE}/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
+            const response = await axiosClient.post('/auth/login', {
+                username,
+                password,
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || 'Đăng nhập thất bại');
-            }
-
-            const token = data.data?.token;
+            const token = response.data?.data?.token;
             if (!token) {
                 throw new Error('Không nhận được token từ phản hồi');
             }
@@ -43,7 +36,10 @@ export const Login: React.FC<Props> = ({ onClose }) => {
             onClose();
             navigate('/home');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Lỗi không xác định');
+            const error = err as AxiosError<{ message: string }>;
+            const errorMsg =
+                error.response?.data?.message || 'Đăng nhập thất bại hoặc sai thông tin!';
+            setError(errorMsg);
         }
     };
 
