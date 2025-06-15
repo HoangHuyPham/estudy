@@ -43,4 +43,11 @@ public class Instructor {
     @Default
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Course> uploadCourses = new HashSet<>();
+
+    public void addCourse(Course course){
+        if (!uploadCourses.contains(course)){
+            uploadCourses.add(course);
+            course.setInstructor(this);
+        }
+    }
 }

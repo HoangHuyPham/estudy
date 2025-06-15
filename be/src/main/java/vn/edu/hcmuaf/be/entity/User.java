@@ -76,4 +76,14 @@ public class User {
         this.profile = profile;
         profile.setUser(this);
     }
+
+    public void addCustomer(Customer customer){
+        this.customer = customer;
+        customer.setUser(this);
+    }
+
+    public void addInstructor(Instructor instructor){
+        this.instructor = instructor;
+        instructor.setUser(this);
+    }
 }

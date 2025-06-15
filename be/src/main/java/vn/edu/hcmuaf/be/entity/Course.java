@@ -4,11 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -36,13 +39,14 @@ import lombok.Setter;
 public class Course {
     @Id
     @Include
+    @GeneratedValue
+    @UuidGenerator
     private UUID id;
     private String name;
     private String description;
     @Default
     @Enumerated(EnumType.STRING)
     private Language language = Language.ENGLISH;
-    private long duration;
 
     @ManyToOne
     @JoinColumn(name = "instructorId", foreignKey = @ForeignKey(name = "instructorId"))
