@@ -1,14 +1,17 @@
 package vn.edu.hcmuaf.be.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ForeignKey;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -20,10 +23,10 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
-import vn.edu.hcmuaf.be.entity.enums.Language;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import vn.edu.hcmuaf.be.entity.enums.Language;
 
 @Entity
 @NoArgsConstructor
@@ -36,29 +39,32 @@ import lombok.Setter;
 public class Course {
     @Id
     @Include
+    @GeneratedValue
+    @UuidGenerator
     private UUID id;
     private String name;
     private String description;
     @Default
     @Enumerated(EnumType.STRING)
     private Language language = Language.ENGLISH;
-    private long duration;
 
     @ManyToOne
     @JoinColumn(name = "instructorId", foreignKey = @ForeignKey(name = "instructorId"))
     private Instructor instructor;
-
-    @ManyToOne
-    @JoinColumn(name = "customerId", foreignKey = @ForeignKey(name = "customerId"))
-    private Customer customer;
 
     @OneToOne(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private Image preview;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     @Default
-    private Set<Section> sections = new HashSet<>();
+    private List<Section> sections = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Gift> courses;
+    @Default
+    private List<Gift> gifts = new ArrayList<>();
+
+    public void addSection(Section section){
+        sections.add(section);
+        section.setCourse(this);
+    }
 }
