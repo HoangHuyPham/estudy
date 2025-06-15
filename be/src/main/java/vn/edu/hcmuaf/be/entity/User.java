@@ -1,6 +1,7 @@
 package vn.edu.hcmuaf.be.entity;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -17,11 +18,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.EqualsAndHashCode.Include;
 
 @Entity
 @NoArgsConstructor
@@ -60,10 +62,12 @@ public class User {
     private Customer customer;
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval=true)
-    private Set<Gift> senders;
+    @Default
+    private List<Gift> senders = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval=true)
-    private Set<Gift> receivers;
+    @Default
+    private List<Gift> receivers = new ArrayList<>();
 
     public void addRole(Role role){
         this.role = role;

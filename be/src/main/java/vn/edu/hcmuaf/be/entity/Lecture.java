@@ -45,4 +45,9 @@ public class Lecture {
 
     @OneToOne(mappedBy = "lecture", cascade = CascadeType.ALL, orphanRemoval=true)
     private Video video;
+
+    public void addVideo(Video video){
+        this.video = video;
+        video.setLecture(this);
+    }
 }

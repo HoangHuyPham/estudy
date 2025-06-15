@@ -1,7 +1,7 @@
 package vn.edu.hcmuaf.be.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -19,10 +19,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
+import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.EqualsAndHashCode.Include;
 
 @Entity
 @NoArgsConstructor
@@ -31,7 +31,7 @@ import lombok.EqualsAndHashCode.Include;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name="section")
+@Table(name = "section")
 public class Section {
     @Id
     @GeneratedValue
@@ -45,7 +45,12 @@ public class Section {
     @JoinColumn(name = "courseId", foreignKey = @ForeignKey(name = "courseId"))
     private Course course;
 
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL, orphanRemoval = true)
     @Default
-    private Set<Lecture> lectures = new HashSet<>();
+    private List<Lecture> lectures = new ArrayList<>();
+
+    public void addLecture(Lecture lecture) {
+        lectures.add(lecture);
+        lecture.setSection(this);
+    }
 }
