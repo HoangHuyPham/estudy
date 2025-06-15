@@ -1,7 +1,7 @@
 package vn.edu.hcmuaf.be.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -39,5 +39,5 @@ public class Role {
 
     @OneToMany(mappedBy="role")
     @Default
-    private Set<User> users = new HashSet<>();
+    private List<User> users = new ArrayList<>();
 }

@@ -1,7 +1,7 @@
 package vn.edu.hcmuaf.be.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -42,5 +42,12 @@ public class Instructor {
 
     @Default
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Course> uploadCourses = new HashSet<>();
+    private List<Course> uploadCourses = new ArrayList<>();
+
+    public void addCourse(Course course){
+        if (!uploadCourses.contains(course)){
+            uploadCourses.add(course);
+            course.setInstructor(this);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package vn.edu.hcmuaf.be.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -43,5 +43,5 @@ public class Customer {
 
     @Default
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OwnedCourse> ownedCourses = new HashSet<>();
+    private List<OwnedCourse> ownedCourses = new ArrayList<>();
 }
