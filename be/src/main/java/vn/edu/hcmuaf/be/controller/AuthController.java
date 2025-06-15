@@ -30,22 +30,36 @@ public class AuthController {
     @PostMapping(value = "/register",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO dto) {
+    public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterRequestDTO dto) {
+
         if (userRepository.findByusername(dto.getUsername()) != null) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Username đã tồn tại");
+            return new ResponseEntity<>(
+                    ApiResponse.builder()
+                            .message("Username đã tồn tại")
+                            .data(null)
+                            .build(),
+                    HttpStatus.CONFLICT
+            );
         }
+
         String hashed = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
         User u = new User();
         u.setUsername(dto.getUsername());
         u.setPassword(hashed);
-
         userRepository.save(u);
 
         String token = jwtUtil.generateToken(u);
-        return ResponseEntity.ok(new LoginResponseDTO(token));
+
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .message("success")
+                        .data(new LoginResponseDTO(token))
+                        .build(),
+                HttpStatus.OK
+        );
     }
+
+
 
     @PostMapping(value = "login" , produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginRequestDTO dto){
