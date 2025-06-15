@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.edu.hcmuaf.be.dto.ApiResponse;
 import vn.edu.hcmuaf.be.dto.login.LoginRequestDTO;
 import vn.edu.hcmuaf.be.dto.login.LoginResponseDTO;
+import vn.edu.hcmuaf.be.dto.register.RegisterRequestDTO;
 import vn.edu.hcmuaf.be.entity.User;
 import vn.edu.hcmuaf.be.jwt.JwtUtil;
 import vn.edu.hcmuaf.be.repository.UserRepository;
