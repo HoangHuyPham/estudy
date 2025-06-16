@@ -28,15 +28,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name="instructor")
+@Table(name = "instructor")
 public class Instructor {
     @Id
     @Include
     private UUID id;
     private String description;
+    private String displayName;
 
     @OneToOne
-    @JoinColumn(name="userId", nullable = true)
+    @JoinColumn(name = "userId", nullable = true)
     @MapsId
     private User user;
 
@@ -44,10 +45,8 @@ public class Instructor {
     @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Course> uploadCourses = new ArrayList<>();
 
-    public void addCourse(Course course){
-        if (!uploadCourses.contains(course)){
-            uploadCourses.add(course);
-            course.setInstructor(this);
-        }
+    public void addCourse(Course course) {
+        uploadCourses.add(course);
+        course.setInstructor(this);
     }
 }

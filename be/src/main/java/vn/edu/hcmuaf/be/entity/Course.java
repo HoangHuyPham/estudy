@@ -44,6 +44,7 @@ public class Course {
     private UUID id;
     private String name;
     private String description;
+    private double oldPrice, currentPrice;
     @Default
     @Enumerated(EnumType.STRING)
     private Language language = Language.ENGLISH;
@@ -66,5 +67,10 @@ public class Course {
     public void addSection(Section section){
         sections.add(section);
         section.setCourse(this);
+    }
+
+    public void addPreview(Image preview){
+        this.preview = preview;
+        preview.setCourse(this);
     }
 }
