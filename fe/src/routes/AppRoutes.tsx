@@ -1,12 +1,13 @@
 import { Route, Routes } from "react-router"
-import { Home } from "../pages"
+import { Login, Register } from "../pages"
 
 export const AppRoutes: React.FC = () => {
     return <>
         <Routes>
             {/* Public Route  */}
             <Route>
-                <Route index element={<Home/>} />
+                <Route path="/login" element={<Login/>} />
+                <Route path="/register" element={<Register/>} />
             </Route>
 
             {/* Private Route  */}
