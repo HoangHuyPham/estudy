@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import vn.edu.hcmuaf.be.dto.ApiResponse;
 import vn.edu.hcmuaf.be.dto.login.LoginRequestDTO;
 import vn.edu.hcmuaf.be.dto.login.LoginResponseDTO;
+import vn.edu.hcmuaf.be.dto.register.RegisterRequestDTO;
 import vn.edu.hcmuaf.be.entity.User;
 import vn.edu.hcmuaf.be.jwt.JwtUtil;
 import vn.edu.hcmuaf.be.repository.UserRepository;
@@ -40,5 +41,37 @@ public class AuthController {
         }
 
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+    @PostMapping(value = "/register",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<?>> register(@RequestBody RegisterRequestDTO dto) {
+
+        if (userRepository.findByusername(dto.getUsername()) != null) {
+            return new ResponseEntity<>(
+                    ApiResponse.builder()
+                            .message("Username đã tồn tại")
+                            .data(null)
+                            .build(),
+                    HttpStatus.CONFLICT
+            );
+        }
+
+        String hashed = BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt());
+        User u = new User();
+        u.setUsername(dto.getUsername());
+        u.setPassword(hashed);
+        userRepository.save(u);
+
+        String token = jwtUtil.generateToken(u);
+
+        return new ResponseEntity<>(
+                ApiResponse.builder()
+                        .message("success")
+                        .data(new LoginResponseDTO(token))
+                        .build(),
+                HttpStatus.OK
+        );
     }
 }
