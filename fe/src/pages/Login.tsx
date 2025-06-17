@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '@styles/Login.css';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
-import { AppRequest } from '@requests';
+import { Endpoint, AppRequest } from '@requests';
 
 export const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -17,7 +17,7 @@ export const Login: React.FC = () => {
     setMessage('');
 
     try {
-      const response = await AppRequest.getInstance().post('/api/auth/login', {
+      const response = await AppRequest.getInstance().post(Endpoint.LOGIN_URL, {
         username,
         password,
       });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Register.css';
-import { AppRequest } from '@requests';
+import { Endpoint, AppRequest } from '@requests';
 
 export const Register: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -20,7 +20,7 @@ export const Register: React.FC = () => {
         }
 
         try {
-            const response = await AppRequest.getInstance().post('/api/auth/register', {
+            const response = await AppRequest.getInstance().post(Endpoint.REGISTER_URL, {
                 username,
                 password,
             });
@@ -31,7 +31,7 @@ export const Register: React.FC = () => {
             if (error.response && error.response.data?.message) {
                 setError(error.response.data.message);
             } else {
-                // setError('Lỗi đăng ký. Vui lòng thử lại.');
+                 setError('Lỗi đăng ký. Vui lòng thử lại.');
             }
         }
     };
