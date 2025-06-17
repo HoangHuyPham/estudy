@@ -27,10 +27,10 @@ export const RoleManagement: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/admin/users', {
+      const response = await axios.get('http://localhost:8080/api/admin/users?page=0&limit=10', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUsers(response.data);
+      setUsers(response.data.data);
     } catch (error) {
       console.error('Error fetching users:', error);
       message.error('Không thể tải danh sách người dùng');

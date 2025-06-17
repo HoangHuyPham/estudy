@@ -33,9 +33,9 @@ export const UserManagement: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await request.get(`${Endpoint.USER_MAN_URL}?page=${pagination.page}&size=${pagination.size}`);
+      const res = await request.get(`${"http://localhost:8080/api/admin/users"}?page=${pagination.page}&limit=${pagination.size}`);
       if (res.status === 200) {
-        setUsers(res.data.content);
+        setUsers(res.data.data);
         setPagination({ ...pagination, total: res.data.totalElements });
       } else {
         message.error("Lấy danh sách người dùng thất bại");
@@ -47,7 +47,7 @@ export const UserManagement: React.FC = () => {
 
   const handleDelete = async (user: User) => {
     try {
-      const res = await request.delete(`${Endpoint.USER_MAN_URL}/${user.id}`);
+      const res = await request.delete(`${"http://localhost:8080/api/admin/users"}/${user.id}`);
       if (res.status === 200) {
         message.success("Xóa thành công");
         fetchUsers();
@@ -64,8 +64,8 @@ export const UserManagement: React.FC = () => {
       const values = await form.validateFields();
 
       const res = currentUser
-        ? await request.put(`${Endpoint.USER_MAN_URL}/${currentUser.id}`, values)
-        : await request.post(Endpoint.USER_MAN_URL, values);
+        ? await request.put(`${"http://localhost:8080/api/admin/users"}/${currentUser.id}`, values)
+        : await request.post("http://localhost:8080/api/admin/users", values);
 
       if (res.status === 200) {
         message.success(currentUser ? "Cập nhật thành công" : "Tạo thành công");

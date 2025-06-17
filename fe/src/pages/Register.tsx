@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Register.css';
 import { Endpoint, AppRequest } from '@requests';
+import { useNavigate } from 'react-router';
 
 export const Register: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -8,6 +9,7 @@ export const Register: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
+    const navigate = useNavigate()
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,20 +22,19 @@ export const Register: React.FC = () => {
         }
 
         try {
-            const response = await AppRequest.getInstance().post(Endpoint.REGISTER_URL, {
+            const response = await AppRequest.getInstance().post("http://localhost:8080/api/auth/register", {
                 username,
                 password,
             });
 
             setMessage(response.data?.message || 'Đăng ký thành công!');
-            onClose();
+            navigate("/auth/login")
+
             } catch (error: any) {
-            if (error.response && error.response.data?.message) {
-                setError(error.response.data.message);
-            } else {
-                 setError('Lỗi đăng ký. Vui lòng thử lại.');
+                console.error('Error đăng ký:', error);
+                const message = error.response?.data?.message || "Lỗi đăng ký. Vui lòng thử lại.";
+                setError(message);
             }
-        }
     };
 
     return (

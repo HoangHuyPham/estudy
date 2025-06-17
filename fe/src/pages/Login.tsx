@@ -17,7 +17,7 @@ export const Login: React.FC = () => {
     setMessage('');
 
     try {
-      const response = await AppRequest.getInstance().post(Endpoint.LOGIN_URL, {
+      const response = await AppRequest.getInstance().post("http://localhost:8080/api/auth/login", {
         username,
         password,
       });
@@ -27,10 +27,9 @@ export const Login: React.FC = () => {
         throw new Error('Không nhận được token từ phản hồi');
       }
 
-      localStorage.setItem('token', token);
+      localStorage.setItem('jwt', token);
       setMessage('Đăng nhập thành công!');
-      onClose();
-      navigate('/Home');
+      navigate('/home');
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       const errorMsg =

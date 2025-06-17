@@ -34,7 +34,7 @@ class AppRequest {
             })
             axiosInstance.interceptors.request.use(
                 config=>{
-                    config.headers.Authorization = localStorage.getItem("jwt")
+                    config.headers.Authorization = `Bearer ${localStorage.getItem("jwt")}`
                     return config
                 },
                 err=>{

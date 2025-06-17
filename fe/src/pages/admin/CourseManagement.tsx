@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Modal, Form, Input, InputNumber, message, Pagination } from 'antd';
-import { Endpoint } from '@requests';
+import { AppRequest, Endpoint } from '@requests';
 import axios from 'axios';
 
 interface Course {
   id?: string;
   name: string;
   description: string;
-  image: string;
+  preview: Preview;
   price: number;
+}
+
+interface Preview {
+  id?:string;
+  url?: string;
+  name?:string;
 }
 
 export const CourseManagement: React.FC = () => {
@@ -22,9 +28,9 @@ export const CourseManagement: React.FC = () => {
   const fetchCourses = async (page = 0, limit = 10) => {
     try {
       setLoading(true);
-      const res = await axios.get(`${Endpoint.COURSE_MAN_URL}?page=${page}&size=${limit}`);
-      const { content, totalElements } = res.data;
-      setCourses(content);
+      const res = await AppRequest.getInstance().get(`${"http://localhost:8080/api/admin/course"}?page=${page}&limit=${limit}`);
+      const { data, totalElements } = res.data;
+      setCourses(data);
       setPagination({ page, limit, total: totalElements });
     } catch (err) {
       message.error('Không thể tải danh sách khóa học');
@@ -39,7 +45,7 @@ export const CourseManagement: React.FC = () => {
 
   const handleDelete = async (id?: string) => {
     try {
-      await axios.delete(`${Endpoint.COURSE_MAN_URL}/${id}`);
+      await AppRequest.getInstance().delete(`${"http://localhost:8080/api/admin/course"}/${id}`);
       message.success('Xóa khóa học thành công');
       fetchCourses(pagination.page, pagination.limit);
     } catch {
@@ -62,10 +68,10 @@ export const CourseManagement: React.FC = () => {
   const handleSubmit = async (values: Course) => {
     try {
       if (editingCourse?.id) {
-        await axios.put(`${Endpoint.COURSE_MAN_URL}/${editingCourse.id}`, values);
+        await AppRequest.getInstance().put(`${"http://localhost:8080/api/admin/course"}/${editingCourse.id}`, values);
         message.success('Cập nhật thành công');
       } else {
-        await axios.post(Endpoint.COURSE_MAN_URL, values);
+        await AppRequest.getInstance().post(Endpoint.COURSE_MAN_URL, values);
         message.success('Tạo mới thành công');
       }
       fetchCourses(pagination.page, pagination.limit);
@@ -89,12 +95,12 @@ export const CourseManagement: React.FC = () => {
     {
       title: 'Ảnh',
       dataIndex: 'image',
-      render: (text: string) => <img src={text} alt="Course" style={{ width: 100 }} />,
+      render: (text: string, record: Course) => <img src={record?.preview?.url} alt="Course" style={{ width: 100 }} />,
     },
     {
       title: 'Giá',
       dataIndex: 'price',
-      render: (value: number) => `${value.toLocaleString()} đ`,
+      render: (value: number) => `${value} đ`,
     },
     {
       title: 'Hành động',
@@ -126,7 +132,7 @@ export const CourseManagement: React.FC = () => {
 
       <Pagination
         current={pagination.page + 1}
-        pageSize={pagination.limit}
+        pagelimit={pagination.limit}
         total={pagination.total}
         onChange={(page) => fetchCourses(page - 1, pagination.limit)}
         style={{ marginTop: 16 }}
