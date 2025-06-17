@@ -31,7 +31,7 @@ export const Register: React.FC = () => {
             if (error.response && error.response.data?.message) {
                 setError(error.response.data.message);
             } else {
-                setError('Lỗi đăng ký. Vui lòng thử lại.');
+                // setError('Lỗi đăng ký. Vui lòng thử lại.');
             }
         }
     };
