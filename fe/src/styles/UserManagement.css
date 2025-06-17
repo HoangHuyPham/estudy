@@ -1,0 +1,19 @@
+.user-management {
+  padding: 1rem;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.user-table input {
+  width: 100%;
+}

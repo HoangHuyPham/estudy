@@ -1,0 +1,53 @@
+/* AdminLayout.css */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-sidebar {
+  width: 240px;
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 1.5rem;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #1abc9c;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar li {
+  margin-bottom: 1rem;
+}
+
+.admin-sidebar a {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  color: #ecf0f1;
+  border-radius: 8px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.admin-sidebar a:hover {
+  background: #1abc9c;
+  color: #fff;
+}
+
+.admin-content {
+  flex-grow: 1;
+  background: #f4f6f8;
+  padding: 2rem;
+  overflow-y: auto;
+}

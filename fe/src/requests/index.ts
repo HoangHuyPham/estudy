@@ -15,7 +15,12 @@ const Endpoint = {
     ORDER_URL: 'api/Order',
     ORDER_BUYER_URL: 'api/Order/ByBuyer',
     USER_URL: 'api/User',
-    ROLE_URL: 'api/Role'
+    ROLE_URL: 'api/Role',
+    ADMIN_URL: 'api/Admin',
+    CART_MAN_URL: 'api/Admin/Carts',
+    COURSE_MAN_URL: 'api/Admin/Course',
+    ROLE_MAN_URL: 'api/Admin/Role',
+    USER_MAN_URL: 'api/Admin/User',
 }
 
 class AppRequest {
@@ -29,7 +34,7 @@ class AppRequest {
             })
             axiosInstance.interceptors.request.use(
                 config=>{
-                    config.headers.Authorization = localStorage.getItem("jwt")
+                    config.headers.Authorization = `Bearer ${localStorage.getItem("jwt")}`
                     return config
                 },
                 err=>{
