@@ -13,26 +13,26 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/admin/order")
-public class AdminOrderController {
+@RequestMapping("/api/admin/carts")
+public class AdminCartController {
 
     @Autowired
     private CartRepository cartRepository;
 
     @GetMapping
-    public ResponseEntity<Page<Cart>> getAllOrders(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<Cart>> getAllCarts(@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(cartRepository.findAll(pageable));
     }
 
     @PostMapping
-    public ResponseEntity<Cart> createOrder(@RequestBody Cart cart) {
+    public ResponseEntity<Cart> createCart(@RequestBody Cart cart) {
         return ResponseEntity.ok(cartRepository.save(cart));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cart> updateOrder(@PathVariable UUID id, @RequestBody Cart cart) {
+    public ResponseEntity<Cart> updateCart(@PathVariable UUID id, @RequestBody Cart cart) {
         Optional<Cart> optional = cartRepository.findById(id);
         if (optional.isEmpty()) return ResponseEntity.notFound().build();
 
@@ -43,7 +43,7 @@ public class AdminOrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteOrder(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteCart(@PathVariable UUID id) {
         if (!cartRepository.existsById(id)) return ResponseEntity.notFound().build();
         cartRepository.deleteById(id);
         return ResponseEntity.ok().build();
