@@ -5,7 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
-import jakarta.transaction.Transactional;
+import vn.edu.hcmuaf.be.entity.Cart;
 import vn.edu.hcmuaf.be.entity.Course;
 import vn.edu.hcmuaf.be.entity.Customer;
 import vn.edu.hcmuaf.be.entity.Image;
@@ -24,7 +24,6 @@ public class DataSeeder implements CommandLineRunner {
         private UserRepository userRepository;
 
         @Override
-        @Transactional
         public void run(String... args) {
                 System.out.println("Data seeder phase");
 
@@ -32,6 +31,10 @@ public class DataSeeder implements CommandLineRunner {
                         Role roleAdmin = Role.builder().name("admin").build();
                         Role roleCustomer = Role.builder().name("customer").build();
                         Role roleInstructor = Role.builder().name("instructor").build();
+
+                        Cart cart1 = Cart.builder().build();
+                        Cart cart2 = Cart.builder().build();
+                        Cart cart3 = Cart.builder().build();
 
                         User userAdmin = User.builder().username("admin")
                                         .password(BCrypt.hashpw("123", BCrypt.gensalt())).build();
@@ -49,12 +52,13 @@ public class DataSeeder implements CommandLineRunner {
                         String previewUrl = "http://localhost:8080/public/df793c44-c9df-4639-9013-56515798120b.png";
                         String videoUrl = "http://localhost:8080/public/0d6c33f3-b506-48fa-8a81-6fa11e752efd.mp4";
 
-                        Video v1 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
-                        Video v2 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
-                        Video v3 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
-                        Video v4 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
-
                         for (int i = 1; i <= 20; i++) {
+
+                                Video v1 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
+                                Video v2 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
+                                Video v3 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
+                                Video v4 = Video.builder().duration(2302).name("no name").url(videoUrl).build();
+                                
                                 Image img = Image.builder().name("no name").url(previewUrl).build();
 
                                 Lecture l1 = Lecture.builder().title("Hello world " + i).ordinal(1)
@@ -93,14 +97,17 @@ public class DataSeeder implements CommandLineRunner {
                         }
 
                         userAdmin.addRole(roleAdmin);
+                        userAdmin.addCart(cart1);
                         userRepository.save(userAdmin);
 
                         userCustomer.addRole(roleCustomer);
                         userCustomer.addCustomer(customer1);
+                        userCustomer.addCart(cart2);
                         userRepository.save(userCustomer);
 
                         userInstructor.addRole(roleInstructor);
                         userInstructor.addInstructor(instructor1);
+                        userInstructor.addCart(cart3);
                         userRepository.save(userInstructor);
 
                 }

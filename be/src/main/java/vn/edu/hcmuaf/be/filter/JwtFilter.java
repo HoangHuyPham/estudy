@@ -1,11 +1,13 @@
 package vn.edu.hcmuaf.be.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -31,7 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
 
-        if (request.getServletPath().startsWith("/api/auth/login")) {
+        if (request.getServletPath().startsWith("/api/auth/") || request.getServletPath().startsWith("/api/global/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,9 +44,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 UUID userId = jwtUtil.getSubFrom(token);
                 if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                     User user = userRepository.findById(userId).orElse(null);
+                    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_"+user.getRole().getName().toUpperCase()));
                     if (user != null && jwtUtil.isTokenValid(token)) {
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                user, null, new ArrayList<>());
+                                user, null, authorities);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 }
