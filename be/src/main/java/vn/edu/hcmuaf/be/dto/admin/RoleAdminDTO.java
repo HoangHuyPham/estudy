@@ -7,7 +7,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoleDTO {
+public class RoleAdminDTO {
     private UUID id;
     private String name;
     private String description;
