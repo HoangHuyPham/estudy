@@ -90,4 +90,9 @@ public class User {
         this.instructor = instructor;
         instructor.setUser(this);
     }
+
+    public void addCart(Cart cart){
+        this.cart = cart;
+        cart.setUser(this);
+    }
 }

@@ -64,6 +64,10 @@ public class Course {
     @Default
     private List<Gift> gifts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Default
+    private List<CartItem> cartItems = new ArrayList<>();
+
     public void addSection(Section section){
         sections.add(section);
         section.setCourse(this);

@@ -1,12 +1,12 @@
 package vn.edu.hcmuaf.be.dto;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Builder.Default;
-
-@Builder
+import lombok.NoArgsConstructor;
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class PaginationQuery {
-    @Default
-    private int page=1, limit=10;
+    private int page;
+    private int limit;
 }

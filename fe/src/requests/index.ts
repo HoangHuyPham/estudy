@@ -1,11 +1,11 @@
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
 
 const Endpoint = {
-    LOGIN_URL: 'api/Auth/Login',
-    PRODUCT_URL: 'api/Product',
+    LOGIN_URL: 'api/auth/login',
+    GLOBAL_COURSE_URL: 'api/global/course',
     CATEGORY_URL: 'api/Category',
     CART_URL: 'api/Cart',
-    PROFILE_URL: 'api/Profile',
+    PROFILE_URL: 'api/self-user-info',
     UPLOAD_URL: 'api/Image/Upload',
     CHECK_EMAIL_URL: 'api/Auth/CheckEmail',
     REGISTER_URL: 'api/Auth/Register',
@@ -19,17 +19,18 @@ const Endpoint = {
 }
 
 class AppRequest {
-    private static _instance: AppRequest;
+    private static _instance: AxiosInstance;
     private constructor() { }
 
     static getInstance() {
         if (!this._instance) {
             const axiosInstance = axios.create({
-                baseURL: "http://localhost:8080/"
+                baseURL: "http://localhost:8080/",
+                withCredentials: false,
             })
             axiosInstance.interceptors.request.use(
                 config=>{
-                    config.headers.Authorization = localStorage.getItem("jwt")
+                    config.headers.Authorization = `Bearer ${localStorage.getItem("jwt")}`
                     return config
                 },
                 err=>{

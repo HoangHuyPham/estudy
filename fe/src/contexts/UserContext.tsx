@@ -1,14 +1,14 @@
 import { createContext, Dispatch, ReactNode, Reducer, useReducer } from "react"
-import { IUser } from "@interfaces"
+import { IUserInfo } from "@interfaces"
 
 interface UserType {
-    user: IUser,
+    user: IUserInfo,
     dispatchUser: Dispatch<Action>
 }
 
 interface Action {
     type: string,
-    payload: IUser | null
+    payload: IUserInfo | null
 }
 
 const USER_ACTION = {
@@ -19,10 +19,10 @@ const USER_ACTION = {
 
 const UserContext = createContext<UserType>({} as UserType)
 
-const UserReducer: Reducer<IUser | null, Action> = (state, action) => {
+const UserReducer: Reducer<IUserInfo | null, Action> = (state, action) => {
     switch (action.type) {
         case USER_ACTION.ADD:
-            return {...action.payload} as IUser
+            return {...action.payload} as IUserInfo
         case USER_ACTION.DELETE:
             localStorage.removeItem("jwt")
             return null

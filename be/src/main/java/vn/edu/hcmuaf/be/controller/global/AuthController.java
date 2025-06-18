@@ -1,4 +1,4 @@
-package vn.edu.hcmuaf.be.controller;
+package vn.edu.hcmuaf.be.controller.global;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -29,6 +29,7 @@ public class CourseDTO {
         private UUID id;
         private String name;
         private int ordinal;
+        private List<LectureDTO> lectures;
     }
 
     @Data
@@ -37,6 +38,7 @@ public class CourseDTO {
         private String title;
         private String description;
         private int ordinal;
+        private VideoDTO video;
     }
 
     @Data
