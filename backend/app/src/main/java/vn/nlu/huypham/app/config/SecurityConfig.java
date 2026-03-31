@@ -52,7 +52,6 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/api-docs/**")
                     .permitAll();
-
             auth.anyRequest().authenticated();
         });
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

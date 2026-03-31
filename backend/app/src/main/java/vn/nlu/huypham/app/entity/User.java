@@ -1,19 +1,16 @@
 package vn.nlu.huypham.app.entity;
 
+import java.time.Instant;
 import java.util.UUID;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +27,6 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,10 +46,11 @@ public class User {
     @JoinColumn(name = "role_id")
     Role role;
 
-    @CreatedDate
     @Column(updatable = false)
-    Long createdAt;
-    
-    @LastModifiedDate
-    Long updatedAt;
+    private Long createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now().getEpochSecond();
+    }
 }

@@ -1,6 +1,7 @@
 package vn.nlu.huypham.app.constant;
 
 import vn.nlu.huypham.app.exception.custom.AppException;
+import vn.nlu.huypham.app.exception.custom.RedisException;
 
 public class Errors {
     public static final AppException USERNAME_OR_PASSWORD_INVALID = new AppException("Username or password is invalid", 1001);
@@ -16,4 +17,5 @@ public class Errors {
     public static final AppException MAIL_OTP_ALREADY_USED = new AppException("Mail OTP is already used", 2003);
     public static final AppException MAIL_OTP_EXPIRED = new AppException("Mail OTP is expired", 2004);
     public static final AppException REGISTER_FAILED = new AppException("Register failed", 2005);
+    public static final RedisException REDIS_ERROR = new RedisException("Unknown error", 3000);
 }

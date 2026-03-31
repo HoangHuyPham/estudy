@@ -10,11 +10,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import vn.nlu.huypham.app.exception.custom.AppException;
+import vn.nlu.huypham.app.exception.custom.*;
 import vn.nlu.huypham.app.payload.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(RedisException.class)
+    public ResponseEntity<?> handle(RedisException ex) {
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder()
+                .code(ex.getCode())
+                .message("Unknown error occurred")
+                .build());
+    }
+
     @ExceptionHandler(AppException.class)
     public ResponseEntity<?> handle(AppException ex) {
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder()

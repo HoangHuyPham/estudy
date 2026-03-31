@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import vn.nlu.huypham.app.config.AppConfig;
 import vn.nlu.huypham.app.dto.request.LoginBasic;
 import vn.nlu.huypham.app.dto.request.LoginGoogle;
+import vn.nlu.huypham.app.dto.request.Logout;
 import vn.nlu.huypham.app.dto.request.RegisterBasic;
 import vn.nlu.huypham.app.dto.request.RegisterOTPBasic;
 import vn.nlu.huypham.app.dto.response.ATAndRT;
@@ -136,6 +137,18 @@ public class AuthController {
                                                 .code(200)
                                                 .message("Rotate refresh token successful")
                                                 .data(accessToken)
+                                                .build());
+        }
+
+        @PostMapping("/logout")
+        public ResponseEntity<?> logout(@Parameter(hidden = true) @CookieValue(name = "refreshToken") String token, @RequestBody Logout dto) throws Exception {
+                authService.logout(dto.getAccessToken(), token);
+                return ResponseEntity.ok()
+                                .header("Set-Cookie", "refreshToken=; httpOnly; secure; path=/; maxAge=0; sameSite=Lax")
+                                .body(ApiResponse.builder()
+                                                .code(200)
+                                                .message("Logout successful")
+                                                .data(dto.getAccessToken())
                                                 .build());
         }
 }

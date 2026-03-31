@@ -31,6 +31,8 @@ import vn.nlu.huypham.app.service.AuthService;
 import vn.nlu.huypham.app.service.JWTService;
 import vn.nlu.huypham.app.service.MailOTPService;
 import vn.nlu.huypham.app.service.ReCaptchaService;
+import vn.nlu.huypham.app.service.RedisService;
+import vn.nlu.huypham.app.service.JWTService.JWTInfo;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +49,7 @@ public class AuthServiceImp implements AuthService {
 
     final UserRepo userRepo;
     final RoleRepo roleRepo;
+    final RedisService redisService;
 
     @Override
     public ATAndRT auth(String username, String password) throws AppException {
@@ -131,5 +134,12 @@ public class AuthServiceImp implements AuthService {
                 .accessToken(jwtService.generateAT(user))
                 .refreshToken(jwtService.generateRT(user))
                 .build();
+    }
+
+    @Override
+    public void logout(String accessToken, String refreshToken) throws AppException {
+        JWTInfo info = jwtService.extractFrom(accessToken);
+        jwtService.invokeRT(refreshToken);
+        redisService.addATBlacklist(info.getId(), info.getExpiredAt());
     }
 }

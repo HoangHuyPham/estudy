@@ -21,14 +21,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.nlu.huypham.app.config.AppConfig;
 import vn.nlu.huypham.app.constant.Errors;
-import vn.nlu.huypham.app.dto.request.ClickableMailContent;
 import vn.nlu.huypham.app.dto.response.ATAndRT;
 import vn.nlu.huypham.app.entity.RefreshToken;
 import vn.nlu.huypham.app.entity.User;
 import vn.nlu.huypham.app.exception.custom.AppException;
 import vn.nlu.huypham.app.repository.RefreshTokenRepo;
 import vn.nlu.huypham.app.service.JWTService;
-import vn.nlu.huypham.app.service.MailOTPService;
+import vn.nlu.huypham.app.service.RedisService;
 
 @Service
 @RequiredArgsConstructor
@@ -40,12 +39,15 @@ public class JWTServiceImp implements JWTService {
     final AppConfig appConfig;
 
     final RefreshTokenRepo refreshTokenRepo;
-
-    final MailOTPService mailService;
+    final RedisService redisService;
 
     @Override
     public JWTInfo extractFrom(String token) throws JWTVerificationException {
         DecodedJWT decodedJWT = jwtVerifier.verify(token);
+        if (redisService.checkATBlackList(UUID.fromString(decodedJWT.getId()))) {
+            log.warn("Redis cache hit for blacklisted token: {}", decodedJWT.getId());
+            throw new JWTVerificationException("Token is blacklisted");
+        }
 
         return JWTInfo.builder()
                 .issuer(decodedJWT.getIssuer())
@@ -53,6 +55,7 @@ public class JWTServiceImp implements JWTService {
                 .avatar(decodedJWT.getClaim("avatar").asString())
                 .role(decodedJWT.getClaim("role").asString())
                 .username(decodedJWT.getSubject())
+                .expiredAt(decodedJWT.getExpiresAtAsInstant())
                 .build();
     }
 
@@ -83,7 +86,7 @@ public class JWTServiceImp implements JWTService {
         RefreshToken refreshToken = refreshTokenRepo.save(
                 RefreshToken.builder()
                         .user(user)
-                        .expiredAt(Instant.now().plusMillis(appConfig.getJwt().getRefreshExp()).toEpochMilli())
+                        .expiredAt(Instant.now().plusSeconds(appConfig.getJwt().getRefreshExp()).getEpochSecond())
                         .build());
         return refreshToken.getId();
     }
@@ -91,35 +94,32 @@ public class JWTServiceImp implements JWTService {
     @Override
     @Transactional
     public ATAndRT rotateRT(String refreshToken) throws AppException {
-        RefreshToken oldRT = refreshTokenRepo.findById(UUID.fromString(refreshToken))
-                .orElseThrow(() -> Errors.REFRESH_TOKEN_INVALID);
-
-        if (oldRT.getExpiredAt() < Instant.now().toEpochMilli())
-            throw Errors.REFRESH_TOKEN_INVALID;
-
-        User user = oldRT.getUser();
-        if (user == null)
-            throw Errors.REFRESH_TOKEN_INVALID;
-
-        if (oldRT.isUsed()) {
-            log.warn("Detected refresh token reuse! User: {}, Warning email was sent", user.getUsername());
-            mailService.sendClickableMail(user.getEmail(), "Detected unauthorised access",
-                    ClickableMailContent.builder()
-                            .name(user.getUsername())
-                            .content(
-                                    "We have detected unauthorised access to your account. If this was not you, please change your password.")
-                            .buttonText("Change Password")
-                            .buttonUrl("http://localhost:3000/change-password")
-                            .build());
+        int result = refreshTokenRepo.useRefreshTokenIfValid(UUID.fromString(refreshToken),
+                Instant.now().getEpochSecond());
+        if (result == 0) {
             throw Errors.REFRESH_TOKEN_INVALID;
         }
 
-        oldRT.setUsed(true);
-        refreshTokenRepo.save(oldRT);
+        RefreshToken rt = refreshTokenRepo.findById(UUID.fromString(refreshToken))
+                .orElseThrow(() -> Errors.REFRESH_TOKEN_INVALID);
+        User user = rt.getUser();
+
+        if (user == null)
+            throw Errors.REFRESH_TOKEN_INVALID;
 
         return ATAndRT.builder()
                 .accessToken(generateAT(user))
                 .refreshToken(generateRT(user))
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public void invokeRT(String refreshToken) throws AppException {
+        int result = refreshTokenRepo.useRefreshTokenIfValid(UUID.fromString(refreshToken),
+                Instant.now().getEpochSecond());
+        if (result == 0) {
+            throw Errors.REFRESH_TOKEN_INVALID;
+        }
     }
 }

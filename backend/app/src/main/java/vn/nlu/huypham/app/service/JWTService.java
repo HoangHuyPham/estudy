@@ -1,5 +1,6 @@
 package vn.nlu.huypham.app.service;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -19,6 +20,8 @@ public interface JWTService {
 
     ATAndRT rotateRT(String refreshToken) throws AppException;
 
+    void invokeRT(String refreshToken) throws AppException;
+
     @Data
     @Builder
     public static class JWTInfo {
@@ -27,5 +30,6 @@ public interface JWTService {
         String username;
         String avatar;
         String role;
+        Instant expiredAt;
     }
 }

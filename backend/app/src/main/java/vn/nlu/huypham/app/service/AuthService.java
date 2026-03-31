@@ -15,4 +15,6 @@ public interface AuthService {
     ATAndRT register(RegisterBasic dto, String otp) throws AppException;
 
     UUID preRegister(RegisterOTPBasic dto) throws AppException;
+
+    void logout(String accessToken, String refreshToken) throws AppException;
 }
