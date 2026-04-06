@@ -6,6 +6,7 @@ import vn.nlu.huypham.app.dto.request.ClickableMailContent;
 import vn.nlu.huypham.app.dto.request.OTPMailContent;
 import vn.nlu.huypham.app.dto.request.RegisterOTPBasic;
 import vn.nlu.huypham.app.dto.request.TextMailContent;
+import vn.nlu.huypham.app.entity.MailOTP;
 import vn.nlu.huypham.app.entity.User;
 
 public interface MailOTPService {
@@ -15,7 +16,7 @@ public interface MailOTPService {
     
     void sendOTPMail(String to, String subject, OTPMailContent content);
 
-    UUID createRegisterOTP(RegisterOTPBasic dto);
+    MailOTP createRegisterOTP(RegisterOTPBasic dto);
 
     User validateOTP(UUID mailOTPId, String email, String otp);
 }

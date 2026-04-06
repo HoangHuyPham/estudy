@@ -17,11 +17,14 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import vn.nlu.huypham.app.config.AppConfig;
 import vn.nlu.huypham.app.constant.Errors;
 import vn.nlu.huypham.app.constant.Roles;
+import vn.nlu.huypham.app.dto.request.OTPMailContent;
 import vn.nlu.huypham.app.dto.request.RegisterBasic;
 import vn.nlu.huypham.app.dto.request.RegisterOTPBasic;
 import vn.nlu.huypham.app.dto.response.ATAndRT;
+import vn.nlu.huypham.app.entity.MailOTP;
 import vn.nlu.huypham.app.entity.User;
 import vn.nlu.huypham.app.exception.custom.AppException;
 import vn.nlu.huypham.app.repository.RoleRepo;
@@ -39,6 +42,8 @@ import vn.nlu.huypham.app.service.JWTService.JWTInfo;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Slf4j
 public class AuthServiceImp implements AuthService {
+    private final AppConfig appConfig;
+
     final AuthenticationManager authManager;
 
     final GoogleIdTokenVerifier ggVerifier;
@@ -120,7 +125,17 @@ public class AuthServiceImp implements AuthService {
         if (userRepo.existsByUsernameOrEmail(dto.getUsername(), dto.getEmail()))
             throw Errors.PRE_REGISTER_FAILED;
 
-        return mailService.createRegisterOTP(dto);
+        MailOTP mailOTP = mailService.createRegisterOTP(dto);
+
+        mailService.sendOTPMail(dto.getEmail(), "Account Registration OTP",
+                OTPMailContent.builder()
+                        .content("This code will expire after %d minutes"
+                                .formatted(appConfig.getMail().getOtpExp() / 60))
+                        .name(dto.getUsername())
+                        .otp(mailOTP.getOtp())
+                        .build());
+
+        return mailOTP.getId();
     }
 
     @Override
@@ -138,8 +153,13 @@ public class AuthServiceImp implements AuthService {
 
     @Override
     public void logout(String accessToken, String refreshToken) throws AppException {
-        JWTInfo info = jwtService.extractFrom(accessToken);
+        try {
+            JWTInfo info = jwtService.extractFrom(accessToken);
+            redisService.addATBlacklist(info.getId(), info.getExpiredAt());
+        } catch (Exception e) {
+            log.warn("Invalid access token during logout: {}", e.getMessage());
+        }
         jwtService.invokeRT(refreshToken);
-        redisService.addATBlacklist(info.getId(), info.getExpiredAt());
+
     }
 }
