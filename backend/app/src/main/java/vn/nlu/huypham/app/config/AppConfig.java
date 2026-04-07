@@ -14,7 +14,22 @@ import lombok.experimental.FieldDefaults;
 public class AppConfig {
     JWT jwt;
     Google google;
+    Cloudflare cloudflare;
     Mail mail;
+    Endpoint endpoint;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Endpoint {
+        String client;
+    }
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Cloudflare {
+        String secretKey;
+        String verifyUrl;
+    }
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,7 +39,7 @@ public class AppConfig {
         long refreshExp; // seconds
         long accessExp; // seconds
     }
-    
+
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Google {
@@ -55,6 +70,6 @@ public class AppConfig {
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Mail {
-        long otpExp; // seconds 
+        long otpExp; // seconds
     }
 }

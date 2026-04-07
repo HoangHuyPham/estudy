@@ -18,4 +18,5 @@ public class Errors {
     public static final AppException MAIL_OTP_EXPIRED = new AppException("Mail OTP is expired", 2004);
     public static final AppException REGISTER_FAILED = new AppException("Register failed", 2005);
     public static final RedisException REDIS_ERROR = new RedisException("Unknown error", 3000);
+    public static final AppException USER_NOT_FOUND = new AppException("User not found", 4001);
 }

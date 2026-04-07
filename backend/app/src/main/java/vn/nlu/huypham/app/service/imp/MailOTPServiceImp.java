@@ -108,7 +108,7 @@ public class MailOTPServiceImp implements MailOTPService {
     }
 
     @Override
-    public UUID createRegisterOTP(RegisterOTPBasic dto) {
+    public MailOTP createRegisterOTP(RegisterOTPBasic dto) {
         HashMap<String, String> payload = new HashMap<>();
         payload.put("username", dto.getUsername());
         payload.put("email", dto.getEmail());
@@ -125,15 +125,7 @@ public class MailOTPServiceImp implements MailOTPService {
                 .build();
         mailOTPRepo.save(mailOTP);
 
-        sendOTPMail(dto.getEmail(), "Account Registration OTP",
-                OTPMailContent.builder()
-                        .content("This code will expire after %d minutes"
-                                .formatted(appConfig.getMail().getOtpExp() / 60))
-                        .name(dto.getUsername())
-                        .otp(mailOTP.getOtp())
-                        .build());
-
-        return mailOTP.getId();
+        return mailOTP;
 
     }
 

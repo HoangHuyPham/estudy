@@ -1,6 +1,7 @@
 package vn.nlu.huypham.app.config;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,7 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import vn.nlu.huypham.app.middleware.JWTFilter;
 import vn.nlu.huypham.app.service.imp.CustomUserDetailsService;
@@ -27,6 +32,7 @@ import vn.nlu.huypham.app.service.imp.CustomUserDetailsService;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    final AppConfig appConfig;
     final CustomUserDetailsService userDetailsService;
     final JWTFilter jwtFilter;
 
@@ -55,8 +61,39 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling(exception -> exception
+            .authenticationEntryPoint((request, response, authException) -> {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            })
+        );
 
         return http.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration secureConfig = new CorsConfiguration();
+        secureConfig.setAllowedOrigins(List.of(appConfig.getEndpoint().getClient()));
+        secureConfig.setAllowCredentials(true);
+        secureConfig.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
+        secureConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        source.registerCorsConfiguration("/auth/logout", secureConfig);
+        source.registerCorsConfiguration("/auth/refresh-token", secureConfig);
+
+        CorsConfiguration publicConfig = new CorsConfiguration();
+        publicConfig.setAllowedOrigins(List.of("*"));
+        publicConfig.setAllowCredentials(false);
+        publicConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        publicConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+
+        source.registerCorsConfiguration("/**", publicConfig);
+        return source;
     }
 
     @Bean
@@ -65,14 +102,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }

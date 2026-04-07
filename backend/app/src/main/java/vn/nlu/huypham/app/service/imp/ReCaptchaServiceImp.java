@@ -21,9 +21,6 @@ import vn.nlu.huypham.app.service.ReCaptchaService;
 @Slf4j
 public class ReCaptchaServiceImp implements ReCaptchaService {
 
-    private static final String EXPECTED_ACTION = "USER_ACTION";
-    private static final double MIN_SCORE = 0.5;
-
     final AppConfig appConfig;
     final WebClient webClient = WebClient.create();
 
@@ -33,75 +30,49 @@ public class ReCaptchaServiceImp implements ReCaptchaService {
             return false;
         }
 
-        String verifyUri = appConfig.getGoogle().getRecaptcha().getVerifyUrl()
-                + appConfig.getGoogle().getApi().getKey();
-        VerifyRequest request = new VerifyRequest(
-                new VerifyEvent(token, EXPECTED_ACTION, appConfig.getGoogle().getRecaptcha().getSiteKey()));
-
         try {
-            VerifyResponse response = webClient.post()
-                    .uri(verifyUri)
-                    .bodyValue(request)
+            CloudflareResponse response = webClient.post()
+                    .uri(appConfig.getCloudflare().getVerifyUrl())
+                    .bodyValue(new CloudflareRequest(appConfig.getCloudflare().getSecretKey(), token))
                     .retrieve()
-                    .bodyToMono(VerifyResponse.class)
+                    .bodyToMono(CloudflareResponse.class)
                     .block();
 
-            if (response == null || response.tokenProperties == null || response.riskAnalysis == null) {
+            if (response == null) {
+                log.warn("Null response from Cloudflare");
                 return false;
             }
 
-            boolean isValidToken = response.tokenProperties.valid;
-            boolean hasAcceptableScore = response.riskAnalysis.score != null
-                    && response.riskAnalysis.score >= MIN_SCORE;
-            log.info("reCAPTCHA verification result: valid={}, score={}, reasons={}",
-                    isValidToken, response.riskAnalysis.score, response.riskAnalysis.reasons);
-            return isValidToken && hasAcceptableScore;
-        } catch (WebClientResponseException ex) {
-            log.warn("reCAPTCHA verification failed with status {}: {}", ex.getStatusCode(),
-                    ex.getResponseBodyAsString());
+            if (!response.isSuccess()) {
+                log.warn("Cloudflare verification failed: {}", response.getErrorCodes());
+                return false;
+            }
+
+            return true;
+        } catch (WebClientResponseException e) {
+            log.error("Error during Cloudflare verification: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
             return false;
-        } catch (Exception ex) {
-            log.error("Unexpected error during reCAPTCHA verification", ex);
+        } catch (Exception e) {
+            log.error("Unexpected error during Cloudflare verification", e);
             return false;
         }
+
     }
 
     @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     @AllArgsConstructor
-    static class VerifyRequest {
-        VerifyEvent event;
+    private static class CloudflareRequest {
+        String secret;
+        String response;
     }
 
     @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
     @AllArgsConstructor
-    static class VerifyEvent {
-        String token;
-        String expectedAction;
-        String siteKey;
+    private static class CloudflareResponse {
+        List<String> errorCodes;
+        boolean success;
     }
 
-    @Data
-    @AllArgsConstructor
-    static class VerifyResponse {
-        String name;
-        VerifyEvent event;
-        RiskAnalysis riskAnalysis;
-        TokenProperties tokenProperties;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class RiskAnalysis {
-        Double score;
-        List<String> reasons;
-    }
-
-    @Data
-    @AllArgsConstructor
-    static class TokenProperties {
-        Boolean valid;
-        String invalidReason;
-        String action;
-        String createTime;
-    }
 }

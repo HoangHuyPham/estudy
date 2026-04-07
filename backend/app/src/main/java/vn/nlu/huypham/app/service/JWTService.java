@@ -29,7 +29,9 @@ public interface JWTService {
         String issuer;
         String username;
         String avatar;
+        String displayName;
         String role;
+        boolean isDarkMode;
         Instant expiredAt;
     }
 }

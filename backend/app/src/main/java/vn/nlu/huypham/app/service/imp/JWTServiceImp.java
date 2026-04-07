@@ -54,6 +54,8 @@ public class JWTServiceImp implements JWTService {
                 .id(UUID.fromString(decodedJWT.getId()))
                 .avatar(decodedJWT.getClaim("avatar").asString())
                 .role(decodedJWT.getClaim("role").asString())
+                .isDarkMode(decodedJWT.getClaim("isDarkMode").asBoolean())
+                .displayName(decodedJWT.getClaim("displayName").asString())
                 .username(decodedJWT.getSubject())
                 .expiredAt(decodedJWT.getExpiresAtAsInstant())
                 .build();
@@ -71,13 +73,18 @@ public class JWTServiceImp implements JWTService {
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(expireAt));
 
+        if (user.getDisplayName() != null) {
+            tokenBuilder.withClaim("displayName", user.getDisplayName());
+        }
         if (user.getAvatar() != null) {
             tokenBuilder.withClaim("avatar", user.getAvatar());
         }
         if (user.getRole() != null) {
-            tokenBuilder.withClaim("role", user.getRole().getName().name().toUpperCase());
+            tokenBuilder.withClaim("role", user.getRole().getName().name());
         }
-
+  
+        tokenBuilder.withClaim("isDarkMode", user.isDarkMode());
+        
         return tokenBuilder.sign(algorithm);
     }
 
