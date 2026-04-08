@@ -1,6 +1,7 @@
 package vn.nlu.huypham.app.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -30,7 +31,7 @@ public interface JWTService {
         String username;
         String avatar;
         String displayName;
-        String role;
+        List<String> roles;
         boolean isDarkMode;
         Instant expiredAt;
     }

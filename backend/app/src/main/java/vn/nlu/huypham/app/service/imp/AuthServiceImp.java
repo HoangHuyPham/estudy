@@ -1,5 +1,6 @@
 package vn.nlu.huypham.app.service.imp;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.authentication.AuthenticationManager;
@@ -100,7 +101,7 @@ public class AuthServiceImp implements AuthService {
                         .displayName(name)
                         .avatar(picture)
                         .isEnabled(true)
-                        .role(roleRepo.findByName(Roles.USER).orElseThrow(() -> Errors.AUTH_FAILED))
+                        .roles(Set.of(roleRepo.findByName(Roles.STUDENT).orElseThrow(() -> Errors.AUTH_FAILED)))
                         .isAccountNonLocked(true)
                         .build();
                 return userRepo.save(newUser);
@@ -142,7 +143,7 @@ public class AuthServiceImp implements AuthService {
     @Transactional
     public ATAndRT register(RegisterBasic dto, String otp) throws AppException {
         User user = mailService.validateOTP(dto.getMailOTPId(), dto.getEmail(), otp);
-        user.setRole(roleRepo.findByName(Roles.USER).orElseThrow(() -> Errors.REGISTER_FAILED));
+        user.setRoles(Set.of(roleRepo.findByName(Roles.STUDENT).orElseThrow(() -> Errors.REGISTER_FAILED)));
         userRepo.save(user);
 
         return ATAndRT.builder()

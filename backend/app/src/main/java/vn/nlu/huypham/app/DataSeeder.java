@@ -1,5 +1,7 @@
 package vn.nlu.huypham.app;
 
+import java.util.Set;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,7 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         Role adminRole = getOrCreateRole(Roles.ADMIN);
-        Role userRole = getOrCreateRole(Roles.USER);
+        Role userRole = getOrCreateRole(Roles.STUDENT);
 
         createUserIfNotExists(
                 "Admin User",
@@ -63,7 +65,7 @@ public class DataSeeder implements CommandLineRunner {
                 .password(passwordEncoder.encode(rawPassword))
                 .isEnabled(true)
                 .isAccountNonLocked(true)
-                .role(role)
+                .roles(Set.of(role))
                 .build());
     }
 }

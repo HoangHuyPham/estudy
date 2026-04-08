@@ -36,7 +36,7 @@ export type IUserData = {
   name: string
   email: string
   avatar: string
-  role: string
+  roles: string[]
   isDarkMode: boolean,
   phone: string
 }

@@ -1,16 +1,17 @@
 package vn.nlu.huypham.app.entity;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -48,12 +49,14 @@ public class User {
     @Builder.Default
     boolean isAccountNonLocked = true;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "fk_user_role"))
-    Role role;
+    @ManyToMany
+    @JoinTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    Set<Role> roles;
 
     @Column(updatable = false)
-    private Long createdAt;
+    private long createdAt;
 
     @PrePersist
     protected void onCreate() {

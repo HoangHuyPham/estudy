@@ -1,5 +1,6 @@
 package vn.nlu.huypham.app.dto.response;
 
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ public class UserMe {
     String username;
     String avatar;
     boolean isDarkMode;
-    UserMeRole role;
+    List<UserMeRole> roles;
     String phone;
 
     @Data
