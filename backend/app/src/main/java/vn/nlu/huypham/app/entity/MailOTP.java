@@ -1,18 +1,19 @@
 package vn.nlu.huypham.app.entity;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-import org.springframework.data.annotation.CreatedDate;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,12 +38,18 @@ public class MailOTP {
     UUID id;
     boolean isUsed;
     String otp;
+
     long expiredAt;
     @Enumerated(EnumType.STRING)
     OTPTypes type;
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String, String> payload;
 
-    @CreatedDate
-    long createdAt;
+    @Column(updatable = false)
+    private long createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = Instant.now().getEpochSecond();
+    }
 }

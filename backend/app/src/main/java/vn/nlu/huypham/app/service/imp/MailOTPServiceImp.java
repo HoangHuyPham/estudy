@@ -139,7 +139,7 @@ public class MailOTPServiceImp implements MailOTPService {
         if (!mailOTP.getOtp().equals(otp)) {
             throw Errors.MAIL_OTP_INVALID;
         }
-        if (System.currentTimeMillis() > mailOTP.getExpiredAt()) {
+        if (Instant.now().getEpochSecond() > mailOTP.getExpiredAt()) {
             throw Errors.MAIL_OTP_EXPIRED;
         }
 
