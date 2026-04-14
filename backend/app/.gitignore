@@ -34,3 +34,4 @@ build/
 
 ### Spring ###
 application-dev.properties
+/storage/

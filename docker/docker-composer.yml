@@ -13,7 +13,7 @@ services:
     volumes:
       - ./db/mysql:/var/lib/mysql
   redis:
-    image: redis:alpine
+    image: redis:8.0
     container_name: redis_cache
     command: redis-server /usr/local/etc/redis/redis.conf
     depends_on:
@@ -23,4 +23,16 @@ services:
       - "6379:6379"
     volumes:
       - ./redis/data:/data
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+
+  nginx:
+    image: nginx:trixie
+    container_name: nginx_proxy
+    restart: unless-stopped
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /home/huypham/Desktop/Repo/Github/estudy/backend/app/storage:/storage:ro
+    extra_hosts:
+      - "spring.internal:host-gateway"

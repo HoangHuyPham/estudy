@@ -24,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import vn.nlu.huypham.app.constant.Roles;
 import vn.nlu.huypham.app.middleware.JWTFilter;
 import vn.nlu.huypham.app.service.imp.CustomUserDetailsService;
 
@@ -54,21 +55,23 @@ public class SecurityConfig {
                     .permitAll();
             auth.requestMatchers(
                     "/auth/**",
+                    "/resource/**",       
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
                     "/api-docs/**")
                     .permitAll();
+            auth.requestMatchers("/storage/**").
+            hasAnyRole(Roles.TUTOR.toString(), Roles.ADMIN.toString());
             auth.anyRequest().authenticated();
         });
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling(exception -> exception
-            .authenticationEntryPoint((request, response, authException) -> {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            })
-            .accessDeniedHandler((request, response, accessDeniedException) -> {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            })
-        );
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                })
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                }));
 
         return http.build();
     }

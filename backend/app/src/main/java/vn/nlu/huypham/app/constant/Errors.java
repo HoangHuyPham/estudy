@@ -19,4 +19,13 @@ public class Errors {
     public static final AppException REGISTER_FAILED = new AppException("Register failed", 2005);
     public static final RedisException REDIS_ERROR = new RedisException("Unknown error", 3000);
     public static final AppException USER_NOT_FOUND = new AppException("User not found", 4001);
+    public static final AppException STORAGE_FAILURE = new AppException("Failed to store file", 5001);
+    public static final AppException INVALID_FILE_TYPE = new AppException("Invalid file type", 5002);
+    public static final AppException INVALID_MIME_TYPE = new AppException("Invalid MIME type", 5003);
+    public static final AppException FILE_EMPTY = new AppException("File is empty", 5003);
+    public static final AppException FILE_READ_ERROR = new AppException("Failed to read file", 5004);
+    public static final AppException CONVERSION_FAILURE = new AppException("Failed to convert video", 5005);
+    public static final AppException FFMPEG_ERROR = new AppException("Failed to process video", 5006);
+    public static final AppException RESOURCE_NOT_FOUND = new AppException("Resource not found", 6001);
+    public static final AppException RESOURCE_CAN_NOT_ACCESS = new AppException("You don't have permission to access this resource", 6002);
 }

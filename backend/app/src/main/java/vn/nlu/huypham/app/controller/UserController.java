@@ -1,6 +1,7 @@
 package vn.nlu.huypham.app.controller;
 
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.nlu.huypham.app.dto.response.UserMe;
 import vn.nlu.huypham.app.payload.ApiResponse;
 import vn.nlu.huypham.app.security.basic.UserPrincipal;
 import vn.nlu.huypham.app.service.UserService;
@@ -18,6 +20,7 @@ import vn.nlu.huypham.app.service.UserService;
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
+    final ModelMapper modelMapper;
     final UserService userService;
 
     @PostMapping("/me")
@@ -26,8 +29,8 @@ public class UserController {
         return ResponseEntity.ok()
                 .body(ApiResponse.builder()
                         .code(200)
-                        .message("Login successful")
-                        .data(userService.getMe(principal.getUsername()))
+                        .message("Get data successful")
+                        .data(modelMapper.map(principal.getUser(), UserMe.class))
                         .build());
     }
 }

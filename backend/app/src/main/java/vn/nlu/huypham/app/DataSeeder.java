@@ -25,6 +25,7 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) {
         Role adminRole = getOrCreateRole(Roles.ADMIN);
         Role userRole = getOrCreateRole(Roles.STUDENT);
+        Role tutorRole = getOrCreateRole(Roles.TUTOR);
 
         createUserIfNotExists(
                 "Admin User",
@@ -35,10 +36,17 @@ public class DataSeeder implements CommandLineRunner {
 
         createUserIfNotExists(
                 "Regular User",
-                "user",
-                "user@estudy.local",
-                "user123",
+                "student",
+                "student@estudy.local",
+                "student123",
                 userRole);
+
+        createUserIfNotExists(
+                "Tutor User",
+                "tutor",
+                "tutor@estudy.local",
+                "tutor123",
+                tutorRole);
     }
 
     private Role getOrCreateRole(Roles name) {

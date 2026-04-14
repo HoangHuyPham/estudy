@@ -17,6 +17,16 @@ public class AppConfig {
     Cloudflare cloudflare;
     Mail mail;
     Endpoint endpoint;
+    Storage storage;
+
+    @Data
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class Storage {
+        String root;
+        String rootUri;
+        String publicUri;
+        String protectedUri;
+    }
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)

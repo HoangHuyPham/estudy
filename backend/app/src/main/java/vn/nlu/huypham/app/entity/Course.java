@@ -4,25 +4,24 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.PreUpdate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode.Include;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import vn.nlu.huypham.app.constant.CourseStatus;
 
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,35 +30,36 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name = "uk_userme_username", columnNames = {"username"})})
-public class User {
+public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Include
     UUID id;
-    String email;
-    String displayName;
-    String username;
-    String password;
-    String avatar;
-    String phone;
-    boolean isDarkMode;
-    @Builder.Default
-    boolean isEnabled = true;
-    @Builder.Default
-    boolean isAccountNonLocked = true;
+    int index;
+    String name;
+    String description;
+    int duration;
+    int studentCount;
+    float oldPrice;
+    float price;
+    CourseStatus status;
+    boolean isProtected;
+    String previewURL;
 
-    @ManyToMany
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    Set<Role> roles;
+    @OneToMany(mappedBy = "course", orphanRemoval = true, cascade = CascadeType.ALL)
+    Set<Section> sections;
 
     @Column(updatable = false)
     long createdAt;
+    long updatedAt;
 
     @PrePersist
-    protected void onCreate() {
+    public void prePersist() {
         this.createdAt = Instant.now().getEpochSecond();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = Instant.now().getEpochSecond();
     }
 }
