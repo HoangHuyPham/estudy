@@ -3,6 +3,8 @@ package vn.nlu.huypham.app.entity;
 import java.time.Instant;
 import java.util.UUID;
 
+import org.springframework.core.io.ResourceEditor;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,6 +20,8 @@ import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import vn.nlu.huypham.app.constant.ResourceTypes;
+import vn.nlu.huypham.app.constant.ResourceVisibilities;
 
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -30,15 +34,19 @@ public class Resource {
     @Id
     @Include
     UUID id;
-    String uri;
-    String diskURI;
-    String type;
     long size;
-    boolean isProtected;
+    ResourceVisibilities visibility;
+    String xAccelRedirect;
+    String diskPath;
+    ResourceTypes type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id")
+    Course course;
 
     @Column(updatable = false)
     long createdAt;

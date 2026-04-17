@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import vn.nlu.huypham.app.constant.CourseStatus;
+import vn.nlu.huypham.app.constant.CourseVisibilities;
 
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -35,16 +35,15 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Include
     UUID id;
-    int index;
     String name;
     String description;
+    String thumbnail;
+    CourseVisibilities visibility;
     int duration;
     int studentCount;
+    int lectureCount;
     float oldPrice;
     float price;
-    CourseStatus status;
-    boolean isProtected;
-    String previewURL;
 
     @OneToMany(mappedBy = "course", orphanRemoval = true, cascade = CascadeType.ALL)
     Set<Section> sections;

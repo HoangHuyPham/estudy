@@ -29,9 +29,7 @@ import vn.nlu.huypham.app.entity.embeded_id.EnrollmentId;
 @Table(uniqueConstraints = {@UniqueConstraint(name = "uk_enrollment_user_course", columnNames = {"user_id", "course_id"})})
 public class Enrollment {
     @EmbeddedId
-    
     EnrollmentId id;
-
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")

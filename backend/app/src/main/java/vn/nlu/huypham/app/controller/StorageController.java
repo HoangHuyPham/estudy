@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import vn.nlu.huypham.app.constant.ResourceTypes;
+import vn.nlu.huypham.app.constant.ResourceVisibilities;
 import vn.nlu.huypham.app.dto.response.FileInfo;
 import vn.nlu.huypham.app.entity.Resource;
 import vn.nlu.huypham.app.payload.ApiResponse;
@@ -32,7 +34,7 @@ public class StorageController {
     public ResponseEntity<?> storeVideo(@RequestPart("file") MultipartFile file) throws Exception {
         UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         storageService.validate(file, List.of("video"), List.of("video/mp4"));
-        Resource resource = storageService.store(file, principal.getUser(), true);
+        Resource resource = storageService.store(file, principal.getUser(), ResourceVisibilities.PROTECTED, ResourceTypes.VIDEO);
         return ResponseEntity.ok()
                 .body(ApiResponse.builder()
                         .code(200)
@@ -45,7 +47,7 @@ public class StorageController {
     public ResponseEntity<?> storeImage(@RequestPart("file") MultipartFile file) throws Exception {
         UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         storageService.validate(file, List.of("image"), List.of("image/jpeg", "image/png"));
-        Resource resource = storageService.store(file, principal.getUser(), false);
+        Resource resource = storageService.store(file, principal.getUser(), ResourceVisibilities.PUBLIC, ResourceTypes.IMAGE);
 
         return ResponseEntity.ok()
                 .body(ApiResponse.builder()

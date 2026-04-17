@@ -1,20 +1,15 @@
 package vn.nlu.huypham.app.entity;
 
-import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +18,7 @@ import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import vn.nlu.huypham.app.constant.VideoStatus;
 
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,33 +27,20 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lecture {
+public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Include
     UUID id;
-    int index;
-    String name;
-    boolean isPrivate;
+    int duration;
+    VideoStatus status;
+    boolean isDraft;
 
-    @OneToOne(mappedBy = "lecture", orphanRemoval = true, cascade = CascadeType.ALL)
-    Video video;
+    @OneToOne
+    @JoinColumn(name = "lecture_id", foreignKey = @ForeignKey(name = "fk_video_lecture"))
+    Lecture lecture;
 
-    @ManyToOne
-    @JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_lecture_section"))
-    Section section;
-
-    @Column(updatable = false)
-    long createdAt;
-    long updatedAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now().getEpochSecond();
-    }
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now().getEpochSecond();
-    }
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "resource_id", foreignKey = @ForeignKey(name = "fk_video_resource"))
+    Resource resource;
 }

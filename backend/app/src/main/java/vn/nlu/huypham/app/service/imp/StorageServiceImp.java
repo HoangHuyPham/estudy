@@ -18,6 +18,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.nlu.huypham.app.config.AppConfig;
 import vn.nlu.huypham.app.constant.Errors;
+import vn.nlu.huypham.app.constant.ResourceTypes;
+import vn.nlu.huypham.app.constant.ResourceVisibilities;
 import vn.nlu.huypham.app.entity.Resource;
 import vn.nlu.huypham.app.entity.User;
 import vn.nlu.huypham.app.exception.custom.AppException;
@@ -47,29 +49,26 @@ public class StorageServiceImp implements StorageService {
     }
 
     @Override
-    public Resource store(MultipartFile file, User user, boolean isProtected) throws AppException {
+    public Resource store(MultipartFile file, User user, ResourceVisibilities visibility, ResourceTypes type) throws AppException {
         UUID id = UUID.randomUUID();
-        Path uriPath = Path.of("/")
-                .resolve("resource")
-                .resolve(id.toString());
-        Path diskURI = Path.of("/")
-                .resolve("disk-" +appConfig.getStorage().getRootUri())
-                .resolve(isProtected ? appConfig.getStorage().getProtectedUri() : appConfig.getStorage().getPublicUri())
+        Path xAccelRedirect = Path.of("/")
+                .resolve("disk-storage" )
+                .resolve(!visibility.equals(ResourceVisibilities.PUBLIC) ? appConfig.getStorage().getProtectedUri() : appConfig.getStorage().getPublicUri())
                 .resolve(id.toString())
                 .resolve("source" + "." + FilenameUtils.getExtension(file.getOriginalFilename()));
-        Path diskPath = Path.of(appConfig.getStorage().getRoot())
-                .resolve(isProtected ? appConfig.getStorage().getProtectedUri() : appConfig.getStorage().getPublicUri())
+        Path diskPath = Path.of(appConfig.getStorage().getRootLocation())
+                .resolve(!visibility.equals(ResourceVisibilities.PUBLIC) ? appConfig.getStorage().getProtectedUri() : appConfig.getStorage().getPublicUri())
                 .resolve(id.toString())
                 .resolve("source" + "." + FilenameUtils.getExtension(file.getOriginalFilename()));
         saveOnDisk(file, diskPath);
         Resource resource = Resource.builder()
                 .id(id)
-                .type(file.getContentType().split("/")[0])
-                .uri(uriPath.toString())
-                .diskURI(diskURI.toString())
+                .xAccelRedirect(xAccelRedirect.toString())
+                .diskPath(diskPath.toString())
                 .size(file.getSize())
-                .isProtected(isProtected)
-                .user(user)
+                .visibility(visibility)
+                .type(type)
+                .owner(user)
                 .build();
         return resourceRepo.save(resource);
     }

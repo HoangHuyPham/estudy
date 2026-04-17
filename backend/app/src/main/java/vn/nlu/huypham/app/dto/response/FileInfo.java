@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import vn.nlu.huypham.app.constant.ResourceTypes;
+import vn.nlu.huypham.app.constant.ResourceVisibilities;
 
 @Builder
 @Data
@@ -13,8 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileInfo {
     UUID id;
-    String uri;
     long size;
+    ResourceVisibilities visibility;
+    ResourceTypes type;
     long createdAt;
-    boolean isProtected;
 }

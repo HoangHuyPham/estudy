@@ -22,7 +22,7 @@ public class AppConfig {
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Storage {
-        String root;
+        String rootLocation;
         String rootUri;
         String publicUri;
         String protectedUri;

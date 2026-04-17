@@ -38,9 +38,9 @@ public class User {
     @Include
     UUID id;
     String email;
+    String password;
     String displayName;
     String username;
-    String password;
     String avatar;
     String phone;
     boolean isDarkMode;

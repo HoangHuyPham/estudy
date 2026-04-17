@@ -28,16 +28,16 @@ public class ResourceController {
     @GetMapping("/{resourceId}")
     public ResponseEntity<?> serve(@PathVariable String resourceId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
-        if (authentication instanceof AnonymousAuthenticationToken) {
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             Resource resource = resourceService.canAccess(UUID.fromString(resourceId), null);
             return ResponseEntity.ok()
-                    .header("X-Accel-Redirect", resource.getDiskURI())
+                    .header("X-Accel-Redirect", resource.getXAccelRedirect())
                     .body(null);
         } else {
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             Resource resource = resourceService.canAccess(UUID.fromString(resourceId), userPrincipal.getUser().getId());
             return ResponseEntity.ok()
-                    .header("X-Accel-Redirect", resource.getDiskURI())
+                    .header("X-Accel-Redirect", resource.getXAccelRedirect())
                     .body(null);
         }
     }
