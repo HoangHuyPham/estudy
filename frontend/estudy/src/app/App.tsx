@@ -1,5 +1,5 @@
 import { BrowserRouter } from 'react-router-dom'
-import { AppRoutes } from '@/routes/AppRoutes'
+import { AppRoutes } from '@/route/AppRoutes'
 import { useEffect } from 'react'
 import { useAppStore } from '@/store/AppStore'
 import { isExpiredAT, parseAT } from '@/lib/utils'

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import vn.nlu.huypham.app.constant.ResourceTypes;
@@ -26,34 +27,40 @@ import vn.nlu.huypham.app.service.StorageService;
 @RequestMapping("/storage")
 @RequiredArgsConstructor
 @Slf4j
-public class StorageController {
-    final StorageService storageService;
-    final ModelMapper modelMapper;
+@Tag(name = "Misc: Storage")
+public class StorageController
+{
+	final StorageService storageService;
+	final ModelMapper modelMapper;
 
-    @PostMapping(value = "/video", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<?> storeVideo(@RequestPart("file") MultipartFile file) throws Exception {
-        UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        storageService.validate(file, List.of("video"), List.of("video/mp4"));
-        Resource resource = storageService.store(file, principal.getUser(), ResourceVisibilities.PROTECTED, ResourceTypes.VIDEO);
-        return ResponseEntity.ok()
-                .body(ApiResponse.builder()
-                        .code(200)
-                        .message("Video uploaded successfully")
-                        .data(modelMapper.map(resource, FileInfo.class))
-                        .build());
-    }
+	@PostMapping(value = "/video", consumes =
+	{ MediaType.MULTIPART_FORM_DATA_VALUE })
+	public ResponseEntity<?> storeVideo(
+		@RequestPart("file") MultipartFile file) throws Exception
+	{
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext()
+				.getAuthentication().getPrincipal();
+		storageService.validate(file, List.of("video"), List.of("video/mp4"));
+		Resource resource = storageService.store(file, principal.getUser(),
+				ResourceVisibilities.PROTECTED, ResourceTypes.VIDEO, null);
+		return ResponseEntity.ok()
+				.body(ApiResponse.builder().code(200).message("Video uploaded successfully")
+						.data(modelMapper.map(resource, FileInfo.class)).build());
+	}
 
-    @PostMapping(value = "/image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<?> storeImage(@RequestPart("file") MultipartFile file) throws Exception {
-        UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        storageService.validate(file, List.of("image"), List.of("image/jpeg", "image/png"));
-        Resource resource = storageService.store(file, principal.getUser(), ResourceVisibilities.PUBLIC, ResourceTypes.IMAGE);
+	@PostMapping(value = "/image", consumes =
+	{ MediaType.MULTIPART_FORM_DATA_VALUE })
+	public ResponseEntity<?> storeImage(
+		@RequestPart("file") MultipartFile file) throws Exception
+	{
+		UserPrincipal principal = (UserPrincipal) SecurityContextHolder.getContext()
+				.getAuthentication().getPrincipal();
+		storageService.validate(file, List.of("image"), List.of("image/jpeg", "image/png"));
+		Resource resource = storageService.store(file, principal.getUser(),
+				ResourceVisibilities.PUBLIC, ResourceTypes.IMAGE, null);
 
-        return ResponseEntity.ok()
-                .body(ApiResponse.builder()
-                        .code(200)
-                        .message("Image uploaded successfully")
-                        .data(modelMapper.map(resource, FileInfo.class))
-                        .build());
-    }
+		return ResponseEntity.ok()
+				.body(ApiResponse.builder().code(200).message("Image uploaded successfully")
+						.data(modelMapper.map(resource, FileInfo.class)).build());
+	}
 }

@@ -14,28 +14,32 @@ import vn.nlu.huypham.app.service.FFmpegService;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Slf4j
-public class FFmpegServiceImp implements FFmpegService {
-    @Override
-    public int getDurationInSeconds(Path videoPath) throws AppException {
-        try {
-            ProcessBuilder pb = new ProcessBuilder(
-                    "ffprobe",
-                    "-v", "error",
-                    "-show_entries", "format=duration",
-                    "-of", "default=noprint_wrappers=1:nokey=1",
-                    videoPath.toString());
-            Process process = pb.start();
-            String output = new String(process.getInputStream().readAllBytes()).trim();
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                String errorOutput = new String(process.getErrorStream().readAllBytes()).trim();
-                log.error("ffprobe error: {}", errorOutput);
-                throw Errors.FFMPEG_ERROR;
-            }
-            return (int) Math.round(Double.parseDouble(output));
-        } catch (Exception e) {
-            log.error("Failed to get video duration", e);
-            throw Errors.FFMPEG_ERROR;
-        }
-    }
+public class FFmpegServiceImp implements FFmpegService
+{
+	@Override
+	public int getDurationInSeconds(
+		Path videoPath) throws AppException
+	{
+		try
+		{
+			ProcessBuilder pb = new ProcessBuilder("ffprobe", "-v", "error", "-show_entries",
+					"format=duration", "-of", "default=noprint_wrappers=1:nokey=1",
+					videoPath.toString());
+			Process process = pb.start();
+			String output = new String(process.getInputStream().readAllBytes()).trim();
+			int exitCode = process.waitFor();
+			if (exitCode != 0)
+			{
+				String errorOutput = new String(process.getErrorStream().readAllBytes()).trim();
+				log.error("ffprobe error: {}", errorOutput);
+				throw Errors.FFMPEG_ERROR;
+			}
+			return (int) Math.round(Double.parseDouble(output));
+		}
+		catch (Exception e)
+		{
+			log.error("Failed to get video duration", e);
+			throw Errors.FFMPEG_ERROR;
+		}
+	}
 }

@@ -10,16 +10,20 @@ import org.springframework.data.repository.query.Param;
 import vn.nlu.huypham.app.annotation.SafeModifying;
 import vn.nlu.huypham.app.entity.RefreshToken;
 
-public interface RefreshTokenRepo extends JpaRepository<RefreshToken, UUID> {
-    Optional<RefreshToken> findByUserId(UUID userId);
+public interface RefreshTokenRepo extends JpaRepository<RefreshToken, UUID>
+{
+	Optional<RefreshToken> findByUserId(
+		UUID userId);
 
-    @SafeModifying
-    @Query("""
-        UPDATE RefreshToken rt
-        SET rt.isUsed = true
-        WHERE rt.id = :id 
-        AND rt.expiredAt >= :now
-        AND rt.isUsed = false
-            """)
-    int useRefreshTokenIfValid(@Param("id") UUID id, @Param("now") long nowSec);
+	@SafeModifying
+	@Query("""
+			UPDATE RefreshToken rt
+			SET rt.isUsed = true
+			WHERE rt.id = :id
+			AND rt.expiredAt >= :now
+			AND rt.isUsed = false
+			    """)
+	int useRefreshTokenIfValid(
+		@Param("id") UUID id,
+		@Param("now") long nowSec);
 }

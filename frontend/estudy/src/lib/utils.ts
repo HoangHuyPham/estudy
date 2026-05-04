@@ -4,6 +4,7 @@ import axios, { type InternalAxiosRequestConfig } from "axios";
 import type { APIResponse, IUserData } from "@/interface";
 import * as jose from "jose";
 import { Endpoints } from "@/constant";
+import { useAppStore } from "@/store/AppStore";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs))
@@ -24,7 +25,7 @@ const refreshToken = async (): Promise<string> => {
   }
 
   refreshingTokenPromise = axiosClient
-    .post<APIResponse<string>>(Endpoints.auth.refreshToken, {}, { withCredentials: true })
+    .post<APIResponse<string>>(Endpoints.AUTH.REFRESH_TOKEN, null , { withCredentials: true })
     .then((res) => {
       const newAccessToken = res.data?.data;
       if (!newAccessToken) {
@@ -32,6 +33,7 @@ const refreshToken = async (): Promise<string> => {
       }
 
       localStorage.setItem("accessToken", newAccessToken);
+      useAppStore.getState().setUserData(parseAT(newAccessToken));
       return newAccessToken;
     })
     .finally(() => {
@@ -61,7 +63,7 @@ axiosClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const isRefreshRequest = originalRequest.url?.includes(Endpoints.auth.refreshToken);
+    const isRefreshRequest = originalRequest.url?.includes(Endpoints.AUTH.REFRESH_TOKEN);
 
     if (error.response?.status === 401 && !originalRequest._retry && !isRefreshRequest) {
       originalRequest._retry = true;
@@ -101,7 +103,7 @@ export const parseAT = (token: string): IUserData => {
     name: payload.name,
     email: payload.email,
     avatar: payload.avatar,
-    role: payload.role,
+    roles: payload.roles,
     isDarkMode: payload.isDarkMode,
     phone: payload.phone
   };

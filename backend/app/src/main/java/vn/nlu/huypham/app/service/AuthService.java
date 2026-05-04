@@ -2,19 +2,28 @@ package vn.nlu.huypham.app.service;
 
 import java.util.UUID;
 
-import vn.nlu.huypham.app.dto.request.RegisterBasic;
-import vn.nlu.huypham.app.dto.request.RegisterOTPBasic;
-import vn.nlu.huypham.app.dto.response.ATAndRT;
+import vn.nlu.huypham.app.dto.request.RegisterConfirmRequest;
+import vn.nlu.huypham.app.dto.request.RegisterRequest;
+import vn.nlu.huypham.app.dto.response.TokenPairResponse;
 import vn.nlu.huypham.app.exception.custom.AppException;
 
-public interface AuthService {
-    ATAndRT auth(String username, String password) throws AppException;
+public interface AuthService
+{
+	TokenPairResponse auth(
+		String username,
+		String password) throws AppException;
 
-    ATAndRT auth(String googleIDToken) throws AppException;
+	TokenPairResponse auth(
+		String googleIDToken) throws AppException;
 
-    ATAndRT register(RegisterBasic dto, String otp) throws AppException;
+	TokenPairResponse register(
+		RegisterConfirmRequest dto,
+		String otp) throws AppException;
 
-    UUID preRegister(RegisterOTPBasic dto) throws AppException;
+	UUID preRegister(
+		RegisterRequest dto) throws AppException;
 
-    void logout(String accessToken, String refreshToken) throws AppException;
+	void logout(
+		String accessToken,
+		String refreshToken) throws AppException;
 }

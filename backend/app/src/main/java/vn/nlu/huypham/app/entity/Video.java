@@ -3,13 +3,16 @@ package vn.nlu.huypham.app.entity;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,20 +30,24 @@ import vn.nlu.huypham.app.constant.VideoStatus;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Video {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Include
-    UUID id;
-    int duration;
-    VideoStatus status;
-    boolean isDraft;
+@Table(name = "video", uniqueConstraints =
+{ @UniqueConstraint(name = "uk_video_lecture_id", columnNames = "lecture_id"),
+		@UniqueConstraint(name = "uk_video_resource_id", columnNames = "resource_id") })
+public class Video
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Include
+	UUID id;
+	int duration;
+	@Enumerated(EnumType.STRING)
+	VideoStatus status;
 
-    @OneToOne
-    @JoinColumn(name = "lecture_id", foreignKey = @ForeignKey(name = "fk_video_lecture"))
-    Lecture lecture;
+	@OneToOne
+	@JoinColumn(name = "lecture_id")
+	Lecture lecture;
 
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "resource_id", foreignKey = @ForeignKey(name = "fk_video_resource"))
-    Resource resource;
+	@OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+	@JoinColumn(name = "resource_id")
+	Resource resource;
 }

@@ -21,33 +21,43 @@ import vn.nlu.huypham.app.service.JWTService.JWTInfo;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class JWTFilter extends OncePerRequestFilter {
+public class JWTFilter extends OncePerRequestFilter
+{
 
-    final JWTService jwtService;
-    final UserDetailsService userDetailsService;
+	final JWTService jwtService;
+	final UserDetailsService userDetailsService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
+	@Override
+	protected void doFilterInternal(
+		HttpServletRequest request,
+		HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException
+	{
+		String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            try {
-                String token = authHeader.substring(7);
+		if (authHeader != null && authHeader.startsWith("Bearer "))
+		{
+			try
+			{
+				String token = authHeader.substring(7);
 
-                JWTInfo jwtInfo = jwtService.extractFrom(token);
-                UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(jwtInfo.getUsername());
+				JWTInfo jwtInfo = jwtService.extractFrom(token);
+				UserPrincipal principal = (UserPrincipal) userDetailsService
+						.loadUserByUsername(jwtInfo.getUsername());
 
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(principal, null,
-                        principal.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            } catch (Exception e) {
-                log.warn("JWT authentication failed: {}, IP: {}", e.getMessage(), request.getRemoteAddr());
-            }
-        }
+				UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+						principal, null, principal.getAuthorities());
+				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				SecurityContextHolder.getContext().setAuthentication(authToken);
+			}
+			catch (Exception e)
+			{
+				log.warn("JWT authentication failed: {}, IP: {}", e.getMessage(),
+						request.getRemoteAddr());
+			}
+		}
 
-        filterChain.doFilter(request, response);
-    }
+		filterChain.doFilter(request, response);
+	}
 
 }

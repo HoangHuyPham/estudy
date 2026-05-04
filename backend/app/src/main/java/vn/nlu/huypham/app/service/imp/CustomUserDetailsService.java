@@ -17,14 +17,17 @@ import vn.nlu.huypham.app.security.basic.UserPrincipal;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
-public class CustomUserDetailsService implements UserDetailsService {
-    
-    final UserRepo userRepo;
+public class CustomUserDetailsService implements UserDetailsService
+{
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsernameOrEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
-        return new UserPrincipal(user);
-    }
+	final UserRepo userRepo;
+
+	@Override
+	public UserDetails loadUserByUsername(
+		String username) throws UsernameNotFoundException
+	{
+		User user = userRepo.findByUsernameOrEmail(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+		return new UserPrincipal(user);
+	}
 }

@@ -31,25 +31,27 @@ import vn.nlu.huypham.app.constant.OTPTypes;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class MailOTP {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Include
-    UUID id;
-    boolean isUsed;
-    String otp;
+public class MailOTP
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Include
+	UUID id;
+	boolean isUsed;
+	String otp;
 
-    long expiredAt;
-    @Enumerated(EnumType.STRING)
-    OTPTypes type;
-    @JdbcTypeCode(SqlTypes.JSON)
-    Map<String, String> payload;
+	long expiredAt;
+	@Enumerated(EnumType.STRING)
+	OTPTypes type;
+	@JdbcTypeCode(SqlTypes.JSON)
+	Map<String, String> payload;
 
-    @Column(updatable = false)
-    private long createdAt;
+	@Column(updatable = false)
+	private long createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = Instant.now().getEpochSecond();
-    }
+	@PrePersist
+	protected void onCreate()
+	{
+		this.createdAt = Instant.now().getEpochSecond();
+	}
 }

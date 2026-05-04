@@ -25,11 +25,12 @@ import vn.nlu.huypham.app.constant.Roles;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Include
-    UUID id;
-    @Enumerated(EnumType.STRING)
-    Roles name;
+public class Role
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Include
+	UUID id;
+	@Enumerated(EnumType.STRING)
+	Roles name;
 }

@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.Modifying;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Modifying(flushAutomatically = true, clearAutomatically = true)
-public @interface SafeModifying {}
+public @interface SafeModifying
+{
+}

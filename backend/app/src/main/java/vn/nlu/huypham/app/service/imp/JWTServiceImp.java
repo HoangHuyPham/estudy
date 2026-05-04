@@ -21,7 +21,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import vn.nlu.huypham.app.config.AppConfig;
 import vn.nlu.huypham.app.constant.Errors;
-import vn.nlu.huypham.app.dto.response.ATAndRT;
+import vn.nlu.huypham.app.dto.response.TokenPairResponse;
 import vn.nlu.huypham.app.entity.RefreshToken;
 import vn.nlu.huypham.app.entity.User;
 import vn.nlu.huypham.app.exception.custom.AppException;
@@ -33,100 +33,111 @@ import vn.nlu.huypham.app.service.RedisService;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
-public class JWTServiceImp implements JWTService {
-    final JWTVerifier jwtVerifier;
-    final Algorithm algorithm;
-    final AppConfig appConfig;
+public class JWTServiceImp implements JWTService
+{
+	final JWTVerifier jwtVerifier;
+	final Algorithm algorithm;
+	final AppConfig appConfig;
 
-    final RefreshTokenRepo refreshTokenRepo;
-    final RedisService redisService;
+	final RefreshTokenRepo refreshTokenRepo;
+	final RedisService redisService;
 
-    @Override
-    public JWTInfo extractFrom(String token) throws JWTVerificationException {
-        DecodedJWT decodedJWT = jwtVerifier.verify(token);
-        if (redisService.checkATBlackList(UUID.fromString(decodedJWT.getId()))) {
-            log.warn("Redis cache hit for blacklisted token: {}", decodedJWT.getId());
-            throw new JWTVerificationException("Token is blacklisted");
-        }
+	@Override
+	public JWTInfo extractFrom(
+		String token) throws JWTVerificationException
+	{
+		DecodedJWT decodedJWT = jwtVerifier.verify(token);
+		if (redisService.checkATBlackList(UUID.fromString(decodedJWT.getId())))
+		{
+			log.warn("Redis cache hit for blacklisted token: {}", decodedJWT.getId());
+			throw new JWTVerificationException("Token is blacklisted");
+		}
 
-        return JWTInfo.builder()
-                .issuer(decodedJWT.getIssuer())
-                .id(UUID.fromString(decodedJWT.getId()))
-                .avatar(decodedJWT.getClaim("avatar").asString())
-                .roles(decodedJWT.getClaim("roles").asList(String.class))
-                .isDarkMode(decodedJWT.getClaim("isDarkMode").asBoolean())
-                .displayName(decodedJWT.getClaim("displayName").asString())
-                .username(decodedJWT.getSubject())
-                .expiredAt(decodedJWT.getExpiresAtAsInstant())
-                .build();
-    }
+		return JWTInfo.builder().issuer(decodedJWT.getIssuer())
+				.id(UUID.fromString(decodedJWT.getId()))
+				.avatar(decodedJWT.getClaim("avatar").asString())
+				.roles(decodedJWT.getClaim("roles").asList(String.class))
+				.isDarkMode(decodedJWT.getClaim("isDarkMode").asBoolean())
+				.displayName(decodedJWT.getClaim("displayName").asString())
+				.username(decodedJWT.getSubject()).expiredAt(decodedJWT.getExpiresAtAsInstant())
+				.build();
+	}
 
-    @Override
-    public String generateAT(User user) {
-        Instant now = Instant.now();
-        Instant expireAt = now.plus(appConfig.getJwt().getAccessExp(), ChronoUnit.SECONDS);
+	@Override
+	public String generateAT(
+		User user)
+	{
+		Instant now = Instant.now();
+		Instant expireAt = now.plus(appConfig.getJwt().getAccessExp(), ChronoUnit.SECONDS);
 
-        Builder tokenBuilder = JWT.create()
-                .withIssuer(appConfig.getJwt().getIssuer())
-                .withSubject(user.getUsername())
-                .withJWTId(UUID.randomUUID().toString())
-                .withIssuedAt(Date.from(now))
-                .withExpiresAt(Date.from(expireAt));
+		Builder tokenBuilder = JWT.create().withIssuer(appConfig.getJwt().getIssuer())
+				.withSubject(user.getUsername()).withJWTId(UUID.randomUUID().toString())
+				.withIssuedAt(Date.from(now)).withExpiresAt(Date.from(expireAt));
 
-        if (user.getDisplayName() != null) {
-            tokenBuilder.withClaim("displayName", user.getDisplayName());
-        }
-        if (user.getAvatar() != null) {
-            tokenBuilder.withClaim("avatar", user.getAvatar());
-        }
-        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
-            tokenBuilder.withClaim("roles", user.getRoles().stream().map(role -> role.getName().name()).toList());
-        }
-  
-        tokenBuilder.withClaim("isDarkMode", user.isDarkMode());
-        
-        return tokenBuilder.sign(algorithm);
-    }
+		if (user.getDisplayName() != null)
+		{
+			tokenBuilder.withClaim("displayName", user.getDisplayName());
+		}
+		if (user.getAvatar() != null)
+		{
+			tokenBuilder.withClaim("avatar", user.getAvatar());
+		}
+		if (user.getRoles() != null && !user.getRoles().isEmpty())
+		{
+			tokenBuilder.withClaim("roles",
+					user.getRoles().stream().map(role -> role.getName().name()).toList());
+		}
 
-    @Override
-    public UUID generateRT(User user) {
-        RefreshToken refreshToken = refreshTokenRepo.save(
-                RefreshToken.builder()
-                        .user(user)
-                        .expiredAt(Instant.now().plusSeconds(appConfig.getJwt().getRefreshExp()).getEpochSecond())
-                        .build());
-        return refreshToken.getId();
-    }
+		tokenBuilder.withClaim("isDarkMode", user.isDarkMode());
 
-    @Override
-    @Transactional
-    public ATAndRT rotateRT(String refreshToken) throws AppException {
-        int result = refreshTokenRepo.useRefreshTokenIfValid(UUID.fromString(refreshToken),
-                Instant.now().getEpochSecond());
-        if (result == 0) {
-            throw Errors.REFRESH_TOKEN_INVALID;
-        }
+		return tokenBuilder.sign(algorithm);
+	}
 
-        RefreshToken rt = refreshTokenRepo.findById(UUID.fromString(refreshToken))
-                .orElseThrow(() -> Errors.REFRESH_TOKEN_INVALID);
-        User user = rt.getUser();
+	@Override
+	public UUID generateRT(
+		User user)
+	{
+		RefreshToken refreshToken = refreshTokenRepo
+				.save(RefreshToken
+						.builder().user(user).expiredAt(Instant.now()
+								.plusSeconds(appConfig.getJwt().getRefreshExp()).getEpochSecond())
+						.build());
+		return refreshToken.getId();
+	}
 
-        if (user == null)
-            throw Errors.REFRESH_TOKEN_INVALID;
+	@Override
+	@Transactional
+	public TokenPairResponse rotateRT(
+		String refreshToken) throws AppException
+	{
+		long result = refreshTokenRepo.useRefreshTokenIfValid(UUID.fromString(refreshToken),
+				Instant.now().getEpochSecond());
+		if (result == 0)
+		{
+			throw Errors.REFRESH_TOKEN_INVALID;
+		}
 
-        return ATAndRT.builder()
-                .accessToken(generateAT(user))
-                .refreshToken(generateRT(user))
-                .build();
-    }
+		RefreshToken rt = refreshTokenRepo.findById(UUID.fromString(refreshToken))
+				.orElseThrow(() -> Errors.REFRESH_TOKEN_INVALID);
+		User user = rt.getUser();
 
-    @Override
-    @Transactional
-    public void invokeRT(String refreshToken) throws AppException {
-        int result = refreshTokenRepo.useRefreshTokenIfValid(UUID.fromString(refreshToken),
-                Instant.now().getEpochSecond());
-        if (result == 0) {
-            throw Errors.REFRESH_TOKEN_INVALID;
-        }
-    }
+		if (user == null)
+			throw Errors.REFRESH_TOKEN_INVALID;
+
+		return TokenPairResponse.builder().accessToken(generateAT(user))
+				.refreshToken(generateRT(user)).build();
+	}
+
+	@Override
+	@Transactional
+	public void invokeRT(
+		String refreshToken) throws AppException
+	{
+		long result = refreshTokenRepo.useRefreshTokenIfValid(UUID.fromString(refreshToken),
+				Instant.now().getEpochSecond());
+		if (result == 0)
+		{
+			throw Errors.REFRESH_TOKEN_INVALID;
+		}
+	}
 }

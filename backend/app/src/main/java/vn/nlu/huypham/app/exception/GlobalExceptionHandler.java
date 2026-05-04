@@ -9,47 +9,65 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.nlu.huypham.app.exception.custom.*;
 import vn.nlu.huypham.app.payload.ApiResponse;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler
+{
 
-    @ExceptionHandler(RedisException.class)
-    public ResponseEntity<?> handle(RedisException ex) {
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder()
-                .code(ex.getCode())
-                .message("Unknown error occurred")
-                .build());
-    }
+	@ExceptionHandler(exception = NoResourceFoundException.class)
+	public ResponseEntity<?> handleNotFound(
+		NoResourceFoundException ex)
+	{
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.builder().code(404).message("Resource not found").build());
+	}
 
-    @ExceptionHandler(AppException.class)
-    public ResponseEntity<?> handle(AppException ex) {
-        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder()
-                .code(ex.getCode())
-                .message(ex.getMessage())
-                .build());
-    }
+	@ExceptionHandler(RedisException.class)
+	public ResponseEntity<?> handle(
+		RedisException ex)
+	{
+		return ResponseEntity.status(HttpStatus.OK).body(
+				ApiResponse.builder().code(ex.getCode()).message("Unknown error occurred").build());
+	}
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handle(
-            MethodArgumentNotValidException ex) {
+	@ExceptionHandler(AppException.class)
+	public ResponseEntity<?> handle(
+		AppException ex)
+	{
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.builder().code(ex.getCode()).message(ex.getMessage()).build());
+	}
 
-        Map<String, String> errors = new HashMap<>();
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ApiResponse<Map<String, String>>> handle(
+		MethodArgumentNotValidException ex)
+	{
 
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
+		Map<String, String> errors = new HashMap<>();
 
-        ApiResponse<Map<String, String>> response = ApiResponse.<Map<String, String>>builder()
-                .code(400)
-                .message("Field validation error")
-                .data(errors)
-                .build();
+		ex.getBindingResult().getAllErrors().forEach((
+			error) ->
+		{
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, errorMessage);
+		});
 
-        return ResponseEntity.badRequest().body(response);
-    }
+		ApiResponse<Map<String, String>> response = ApiResponse.<Map<String, String>>builder()
+				.code(400).message("Field validation error").data(errors).build();
+
+		return ResponseEntity.badRequest().body(response);
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<?> handle(
+		Exception ex)
+	{
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.builder().code(500).message("Unknown error occurred").build());
+	}
 }

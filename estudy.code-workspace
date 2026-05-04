@@ -10,5 +10,8 @@
 			"path": "docker"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"java.format.settings.url": "mine-formatter.xml",
+		"java.format.settings.profile": ""
+	}
 }

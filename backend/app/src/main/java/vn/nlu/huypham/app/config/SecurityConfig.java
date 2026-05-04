@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import vn.nlu.huypham.app.constant.Roles;
@@ -31,88 +30,90 @@ import vn.nlu.huypham.app.service.imp.CustomUserDetailsService;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+public class SecurityConfig
+{
 
-    final AppConfig appConfig;
-    final CustomUserDetailsService userDetailsService;
-    final JWTFilter jwtFilter;
+	final AppConfig appConfig;
+	final CustomUserDetailsService userDetailsService;
+	final JWTFilter jwtFilter;
 
-    @Bean
-    SecureRandom secureRandom() {
-        return new SecureRandom();
-    }
+	@Bean
+	SecureRandom secureRandom()
+	{
+		return new SecureRandom();
+	}
 
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement(sessionManagement -> sessionManagement
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.cors(Customizer.withDefaults());
-        http.csrf(csrf -> csrf.disable());
-        http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers(HttpMethod.OPTIONS).permitAll();
-            auth.requestMatchers(
-                    "/swagger-ui.html")
-                    .permitAll();
-            auth.requestMatchers(
-                    "/auth/**",
-                    "/resource/**",       
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/api-docs/**")
-                    .permitAll();
-            auth.requestMatchers("/storage/**").
-            hasAnyRole(Roles.TUTOR.toString(), Roles.ADMIN.toString());
-            auth.anyRequest().authenticated();
-        });
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        http.exceptionHandling(exception -> exception
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                })
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                }));
+	@Bean
+	SecurityFilterChain filterChain(
+		HttpSecurity http) throws Exception
+	{
+		http.sessionManagement(sessionManagement -> sessionManagement
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		http.cors(Customizer.withDefaults());
+		http.csrf(csrf -> csrf.disable());
+		http.authorizeHttpRequests(auth ->
+		{
+			auth.requestMatchers(HttpMethod.OPTIONS).permitAll();
+			auth.requestMatchers("/swagger-ui.html").permitAll();
+			auth.requestMatchers("/auth/**", "/resource/**", "/swagger-ui/**", "/v3/api-docs/**",
+					"/api-docs/**").permitAll();
+			auth.requestMatchers("/storage/**").hasAnyRole(Roles.ADMIN.toString());
+			auth.requestMatchers("/tutor/**").hasAnyRole(Roles.TUTOR.toString(),
+					Roles.ADMIN.toString());
+			auth.anyRequest().authenticated();
+		});
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		http.exceptionHandling(exception -> exception.authenticationEntryPoint((
+			request,
+			response,
+			authException) ->
+		{
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		}).accessDeniedHandler((
+			request,
+			response,
+			accessDeniedException) ->
+		{
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+		}));
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	@Bean
+	CorsConfigurationSource corsConfigurationSource()
+	{
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-        CorsConfiguration secureConfig = new CorsConfiguration();
-        secureConfig.setAllowedOrigins(List.of(appConfig.getEndpoint().getClient()));
-        secureConfig.setAllowCredentials(true);
-        secureConfig.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
-        secureConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+		CorsConfiguration corsConfiguration = new CorsConfiguration();
+		corsConfiguration.setAllowedOrigins(
+				List.of(appConfig.getEndpoint().getClient(), "http://localhost:5555"));
+		corsConfiguration.setAllowCredentials(true);
+		corsConfiguration.setAllowedMethods(List.of("*"));
+		corsConfiguration.setAllowedHeaders(List.of("*"));
+		source.registerCorsConfiguration("/**", corsConfiguration);
 
-        source.registerCorsConfiguration("/auth/logout", secureConfig);
-        source.registerCorsConfiguration("/auth/refresh-token", secureConfig);
+		return source;
+	}
 
-        CorsConfiguration publicConfig = new CorsConfiguration();
-        publicConfig.setAllowedOrigins(List.of("*"));
-        publicConfig.setAllowCredentials(false);
-        publicConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        publicConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+	@Bean
+	PasswordEncoder passwordEncoder()
+	{
+		return new BCryptPasswordEncoder(12);
+	}
 
-        source.registerCorsConfiguration("/**", publicConfig);
-        return source;
-    }
+	@Bean
+	AuthenticationProvider authenticationProvider()
+	{
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+		authProvider.setPasswordEncoder(passwordEncoder());
+		return authProvider;
+	}
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
-
-    @Bean
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+	@Bean
+	AuthenticationManager authenticationManager(
+		AuthenticationConfiguration config) throws Exception
+	{
+		return config.getAuthenticationManager();
+	}
 }

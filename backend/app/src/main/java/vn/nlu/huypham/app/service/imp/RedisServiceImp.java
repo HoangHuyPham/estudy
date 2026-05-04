@@ -18,25 +18,32 @@ import vn.nlu.huypham.app.service.RedisService;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Slf4j
-public class RedisServiceImp implements RedisService {
+public class RedisServiceImp implements RedisService
+{
 
-    final StringRedisTemplate stringRedisTemplate;
+	final StringRedisTemplate stringRedisTemplate;
 
-    @Override
-    public boolean checkATBlackList(UUID jti) {
-        return stringRedisTemplate.hasKey("at-blacklist:" + jti); 
-    }
+	@Override
+	public boolean checkATBlackList(
+		UUID jti)
+	{
+		return stringRedisTemplate.hasKey("at-blacklist:" + jti);
+	}
 
-    @Override
-    public void addATBlacklist(UUID jti, Instant expiredAt) throws RedisException {
-        try {
-            stringRedisTemplate.opsForValue().set(
-                    "at-blacklist:" + jti,
-                    "1",
-                    Duration.between(Instant.now(), expiredAt).plusSeconds(1));
-        } catch (Exception e) {
-            throw Errors.REDIS_ERROR;
-        }
-    }
+	@Override
+	public void addATBlacklist(
+		UUID jti,
+		Instant expiredAt) throws RedisException
+	{
+		try
+		{
+			stringRedisTemplate.opsForValue().set("at-blacklist:" + jti, "1",
+					Duration.between(Instant.now(), expiredAt).plusSeconds(1));
+		}
+		catch (Exception e)
+		{
+			throw Errors.REDIS_ERROR;
+		}
+	}
 
 }

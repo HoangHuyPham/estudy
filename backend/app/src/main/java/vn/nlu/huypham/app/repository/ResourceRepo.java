@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import vn.nlu.huypham.app.entity.Resource;
 
-public interface ResourceRepo extends JpaRepository<Resource, UUID> {
+public interface ResourceRepo extends JpaRepository<Resource, UUID>
+{
 }

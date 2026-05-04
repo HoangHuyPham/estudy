@@ -4,8 +4,6 @@
 @import "@fontsource-variable/montserrat";
 @import "@fontsource-variable/noto-serif";
 
-@custom-variant dark (&:is(.dark *));
-
 @font-face {
   font-family: 'Inter';
   font-style: normal;
@@ -90,6 +88,8 @@ body {
   --sidebar-ring: oklch(0.56 0.021 213.5);
 }
 
+
+
 @theme inline {
   --font-sans: 'Montserrat Variable', sans-serif;
   --font-heading: 'Noto Serif Variable', serif;
@@ -142,5 +142,26 @@ body {
   }
   html {
     @apply font-sans;
+  }
+
+  * {
+    scrollbar-width: thin; /* Options: auto, thin, none */
+  }
+}
+
+@theme{
+  --animate-slightly-scale: slightly-scale .2s ease-in-out forwards;
+
+  @keyframes slightly-scale {
+    0% {
+      border: var(--primary) 5px solid;
+      transform: scale(0.95);
+    }
+    50% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 }

@@ -26,24 +26,28 @@ import vn.nlu.huypham.app.entity.embeded_id.EnrollmentId;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name = "uk_enrollment_user_course", columnNames = {"user_id", "course_id"})})
-public class Enrollment {
-    @EmbeddedId
-    EnrollmentId id;
-    @ManyToOne
-    @MapsId("userId")
-    @JoinColumn(name = "user_id")
-    User user;
-    @ManyToOne
-    @MapsId("courseId")
-    @JoinColumn(name = "course_id")
-    Course course;
+@Table(uniqueConstraints =
+{ @UniqueConstraint(name = "uk_enrollment_user_course", columnNames =
+{ "user_id", "course_id" }) })
+public class Enrollment
+{
+	@EmbeddedId
+	EnrollmentId id;
+	@ManyToOne
+	@MapsId("userId")
+	@JoinColumn(name = "user_id")
+	User user;
+	@ManyToOne
+	@MapsId("courseId")
+	@JoinColumn(name = "course_id")
+	Course course;
 
-    @Column(updatable = false)
-    long createdAt;
+	@Column(updatable = false)
+	long createdAt;
 
-    @PrePersist
-    public void onCreate() {
-        this.createdAt = Instant.now().getEpochSecond();
-    }
+	@PrePersist
+	public void onCreate()
+	{
+		this.createdAt = Instant.now().getEpochSecond();
+	}
 }

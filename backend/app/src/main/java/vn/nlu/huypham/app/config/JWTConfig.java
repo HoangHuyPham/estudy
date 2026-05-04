@@ -10,17 +10,20 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-public class JWTConfig {
+public class JWTConfig
+{
 
-    final AppConfig appConfig;
+	final AppConfig appConfig;
 
-    @Bean
-    public Algorithm algorithm() {
-        return Algorithm.HMAC256(appConfig.getJwt().getKey());
-    }
+	@Bean
+	public Algorithm algorithm()
+	{
+		return Algorithm.HMAC256(appConfig.getJwt().getKey());
+	}
 
-    @Bean
-    public JWTVerifier jwtVerifier() {
-        return JWT.require(algorithm()).withIssuer("estudy").build();
-    }
+	@Bean
+	public JWTVerifier jwtVerifier()
+	{
+		return JWT.require(algorithm()).withIssuer("estudy").build();
+	}
 }

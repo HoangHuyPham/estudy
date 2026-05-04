@@ -13,14 +13,16 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-public class GoogleAPIConfig {
-    final AppConfig appConfig;
+public class GoogleAPIConfig
+{
+	final AppConfig appConfig;
 
-    @Bean
-    public GoogleIdTokenVerifier ggVerifier() {
-        return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-                new GsonFactory())
-                .setAudience(Collections.singletonList(appConfig.getGoogle().getOauth2().getClientId()))
-                .build();
-    }
+	@Bean
+	public GoogleIdTokenVerifier ggVerifier()
+	{
+		return new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+				.setAudience(
+						Collections.singletonList(appConfig.getGoogle().getOauth2().getClientId()))
+				.build();
+	}
 }

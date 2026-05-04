@@ -2,21 +2,35 @@ package vn.nlu.huypham.app.service;
 
 import java.util.UUID;
 
-import vn.nlu.huypham.app.dto.request.ClickableMailContent;
-import vn.nlu.huypham.app.dto.request.OTPMailContent;
-import vn.nlu.huypham.app.dto.request.RegisterOTPBasic;
-import vn.nlu.huypham.app.dto.request.TextMailContent;
+import vn.nlu.huypham.app.dto.request.RegisterRequest;
 import vn.nlu.huypham.app.entity.MailOTP;
 import vn.nlu.huypham.app.entity.User;
+import vn.nlu.huypham.app.payload.email.ClickableEmailContent;
+import vn.nlu.huypham.app.payload.email.OTPEmailContent;
+import vn.nlu.huypham.app.payload.email.TextEmailContent;
 
-public interface MailOTPService {
-    void sendTextMail(String to, String subject, TextMailContent content);
+public interface MailOTPService
+{
+	void sendTextMail(
+		String to,
+		String subject,
+		TextEmailContent content);
 
-    void sendClickableMail(String to, String subject, ClickableMailContent content);
-    
-    void sendOTPMail(String to, String subject, OTPMailContent content);
+	void sendClickableMail(
+		String to,
+		String subject,
+		ClickableEmailContent content);
 
-    MailOTP createRegisterOTP(RegisterOTPBasic dto);
+	void sendOTPMail(
+		String to,
+		String subject,
+		OTPEmailContent content);
 
-    User validateOTP(UUID mailOTPId, String email, String otp);
+	MailOTP createRegisterOTP(
+		RegisterRequest dto);
+
+	User validateOTP(
+		UUID mailOTPId,
+		String email,
+		String otp);
 }

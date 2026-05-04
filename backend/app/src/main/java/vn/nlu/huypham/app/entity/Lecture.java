@@ -6,6 +6,7 @@ import java.util.UUID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,33 +32,35 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lecture {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Include
-    UUID id;
-    int index;
-    String name;
-    boolean isPrivate;
+public class Lecture
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Include
+	UUID id;
+	float weight;
+	String name;
 
-    @OneToOne(mappedBy = "lecture", orphanRemoval = true, cascade = CascadeType.ALL)
-    Video video;
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "lecture", orphanRemoval = true, cascade = CascadeType.ALL)
+	Video video;
 
-    @ManyToOne
-    @JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_lecture_section"))
-    Section section;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "section_id", foreignKey = @ForeignKey(name = "fk_lecture_section"))
+	Section section;
 
-    @Column(updatable = false)
-    long createdAt;
-    long updatedAt;
+	@Column(updatable = false)
+	long createdAt;
+	long updatedAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = Instant.now().getEpochSecond();
-    }
+	@PrePersist
+	public void prePersist()
+	{
+		this.createdAt = Instant.now().getEpochSecond();
+	}
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = Instant.now().getEpochSecond();
-    }
+	@PreUpdate
+	public void preUpdate()
+	{
+		this.updatedAt = Instant.now().getEpochSecond();
+	}
 }

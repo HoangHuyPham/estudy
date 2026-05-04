@@ -24,46 +24,54 @@ import vn.nlu.huypham.app.service.ResourceService;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Slf4j
-public class ResourceServiceImp implements ResourceService {
+public class ResourceServiceImp implements ResourceService
+{
 
-    final EnrollmentRepo enrollmentRepo;
-    final ResourceRepo resourceRepo;
-    final UserRepo userRepo;
+	final EnrollmentRepo enrollmentRepo;
+	final ResourceRepo resourceRepo;
+	final UserRepo userRepo;
 
-    @Override
-    public Resource canAccess(UUID resourceId, UUID userId) throws AppException {
+	@Override
+	public Resource canAccess(
+		UUID resourceId,
+		UUID userId) throws AppException
+	{
 
-        Resource resource = resourceRepo.findById(resourceId).orElseThrow(() -> {
-            log.warn("Resource {} not found", resourceId);
-            return Errors.RESOURCE_NOT_FOUND;
-        });
+		Resource resource = resourceRepo.findById(resourceId).orElseThrow(() ->
+		{
+			log.warn("Resource {} not found", resourceId);
+			return Errors.RESOURCE_NOT_FOUND;
+		});
 
-        // Pass with public resource
-        if (resource.getVisibility().equals(ResourceVisibilities.PUBLIC))
-            return resource;
+		// Pass with public resource
+		if (resource.getVisibility().equals(ResourceVisibilities.PUBLIC))
+			return resource;
 
-        User user = userRepo.findById(userId).orElseThrow(() -> Errors.RESOURCE_CAN_NOT_ACCESS);
+		User user = userRepo.findById(userId).orElseThrow(() -> Errors.RESOURCE_CAN_NOT_ACCESS);
 
-        // Pass with admin role
-        if (user.getRoles().stream().anyMatch((u) -> u.getName().equals(Roles.ADMIN)))
-            return resource;
+		// Pass with admin role
+		if (user.getRoles().stream().anyMatch((
+			u) -> u.getName().equals(Roles.ADMIN)))
+			return resource;
 
-        // Pass with owner
-        if (resource.getOwner().getId().equals(userId))
-            return resource;
+		// Pass with owner
+		if (resource.getOwner().getId().equals(userId))
+			return resource;
 
-        // Check with protected resource
-        if (resource.getVisibility().equals(ResourceVisibilities.PROTECTED)) {
-            if (resource.getCourse() != null) {
-                Enrollment enrollment = enrollmentRepo.findById(EnrollmentId.builder()
-                        .courseId(resource.getCourse().getId())
-                        .userId(userId)
-                        .build()).orElseThrow(() -> Errors.RESOURCE_CAN_NOT_ACCESS);
-                if (enrollment.getUser().getId().equals(userId))
-                    return resource;
-            }
-        }
+		// Check with protected resource
+		if (resource.getVisibility().equals(ResourceVisibilities.PROTECTED))
+		{
+			if (resource.getCourse() != null)
+			{
+				Enrollment enrollment = enrollmentRepo
+						.findById(EnrollmentId.builder().courseId(resource.getCourse().getId())
+								.userId(userId).build())
+						.orElseThrow(() -> Errors.RESOURCE_CAN_NOT_ACCESS);
+				if (enrollment.getUser().getId().equals(userId))
+					return resource;
+			}
+		}
 
-        throw Errors.RESOURCE_CAN_NOT_ACCESS;
-    }
+		throw Errors.RESOURCE_CAN_NOT_ACCESS;
+	}
 }

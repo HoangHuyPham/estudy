@@ -13,9 +13,9 @@
   "iconLibrary": "remixicon",
   "rtl": false,
   "aliases": {
-    "components": "@/components",
+    "components": "@/component",
     "utils": "@/lib/utils",
-    "ui": "@/components/base",
+    "ui": "@/component/base",
     "lib": "@/lib",
     "hooks": "@/hooks"
   },

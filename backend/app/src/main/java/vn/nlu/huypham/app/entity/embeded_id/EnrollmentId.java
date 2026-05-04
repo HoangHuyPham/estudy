@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EnrollmentId {
-    UUID userId;
-    UUID courseId;
+public class EnrollmentId
+{
+	UUID userId;
+	UUID courseId;
 }

@@ -25,15 +25,16 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class RefreshToken {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Include
-    UUID id;
-    long expiredAt;
-    boolean isUsed;
+public class RefreshToken
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Include
+	UUID id;
+	long expiredAt;
+	boolean isUsed;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_refresh_token_user"))
-    User user;
+	@ManyToOne
+	@JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_refresh_token_user"))
+	User user;
 }

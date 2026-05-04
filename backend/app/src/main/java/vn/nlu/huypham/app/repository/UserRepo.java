@@ -10,12 +10,20 @@ import org.springframework.data.repository.query.Param;
 
 import vn.nlu.huypham.app.entity.User;
 
-public interface UserRepo extends JpaRepository<User, UUID> {
-    Optional<User> findByUsername(String username);  
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.username = :input OR u.email = :input")
-    Optional<User> findByUsernameOrEmail(@Param("input") String input);
-    @EntityGraph(attributePaths = "roles")
-    Optional<User> findByEmail(String email);
+public interface UserRepo extends JpaRepository<User, UUID>
+{
+	Optional<User> findByUsername(
+		String username);
 
-    boolean existsByUsernameOrEmail(String user, String email);
+	@Query("SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.username = :input OR u.email = :input")
+	Optional<User> findByUsernameOrEmail(
+		@Param("input") String input);
+
+	@EntityGraph(attributePaths = "roles")
+	Optional<User> findByEmail(
+		String email);
+
+	boolean existsByUsernameOrEmail(
+		String user,
+		String email);
 }

@@ -13,10 +13,11 @@ import vn.nlu.huypham.app.constant.ResourceVisibilities;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileInfo {
-    UUID id;
-    long size;
-    ResourceVisibilities visibility;
-    ResourceTypes type;
-    long createdAt;
+public class FileInfo
+{
+	UUID id;
+	long size;
+	ResourceVisibilities visibility;
+	ResourceTypes type;
+	long createdAt;
 }

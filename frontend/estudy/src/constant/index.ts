@@ -1,13 +1,19 @@
 export const Endpoints = {
-    auth: {
-        login: "/auth/login",
-        loginWithGoogle: "/auth/login/google",
-        preRegister: "/auth/pre-register",
-        register: "/auth/register",
-        logout: "/auth/logout",
-        refreshToken: "/auth/refresh-token",
+    AUTH: {
+        LOGIN: "/auth/login/basic",
+        LOGIN_WITH_GOOGLE: "/auth/login/google",
+        PREREGISTER: "/auth/pre-register",
+        REGISTER: "/auth/register",
+        LOGOUT: "/auth/logout",
+        REFRESH_TOKEN: "/auth/refresh-token",
     },
-    user: {
-        me: "/users/me",
+    TUTOR: {
+        COURSES: "/tutor/courses",
+        SECTIONS: "/tutor/sections",
+        SECTIONS_BULK_DELETE: "/tutor/sections/bulk-delete",
+        LECTURES: "/tutor/lectures",
+        LECTURES_BULK_DELETE: "/tutor/lectures/bulk-delete",
     },
+    SERVE: "/resource/serve",
+    BACKEND: "http://localhost:5555",
 }

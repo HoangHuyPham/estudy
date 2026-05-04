@@ -20,6 +20,7 @@ import vn.nlu.huypham.app.config.AppConfig;
 import vn.nlu.huypham.app.constant.Errors;
 import vn.nlu.huypham.app.constant.ResourceTypes;
 import vn.nlu.huypham.app.constant.ResourceVisibilities;
+import vn.nlu.huypham.app.entity.Course;
 import vn.nlu.huypham.app.entity.Resource;
 import vn.nlu.huypham.app.entity.User;
 import vn.nlu.huypham.app.exception.custom.AppException;
@@ -30,74 +31,110 @@ import vn.nlu.huypham.app.service.StorageService;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 @Slf4j
-public class StorageServiceImp implements StorageService {
-    final AppConfig appConfig;
-    final ResourceRepo resourceRepo;
-    final Tika tika = new Tika();
+public class StorageServiceImp implements StorageService
+{
+	final AppConfig appConfig;
+	final ResourceRepo resourceRepo;
+	final Tika tika = new Tika();
 
-    @Override
-    public void saveOnDisk(MultipartFile file, Path target) throws AppException {
-        try {
-            Files.createDirectories(target.getParent());
-            try (InputStream is = file.getInputStream()) {
-                Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
-            }
-        } catch (Exception e) {
-            log.error("Failed to save file on disk", e);
-            throw Errors.STORAGE_FAILURE;
-        }
-    }
+	public void saveOnDisk(
+		MultipartFile file,
+		Path target) throws AppException
+	{
+		try
+		{
+			Files.createDirectories(target.getParent());
+			try (InputStream is = file.getInputStream())
+			{
+				Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
+			}
+		}
+		catch (Exception e)
+		{
+			log.error("Failed to save file on disk", e);
+			throw Errors.STORAGE_FAILURE;
+		}
+	}
 
-    @Override
-    public Resource store(MultipartFile file, User user, ResourceVisibilities visibility, ResourceTypes type) throws AppException {
-        UUID id = UUID.randomUUID();
-        Path xAccelRedirect = Path.of("/")
-                .resolve("disk-storage" )
-                .resolve(!visibility.equals(ResourceVisibilities.PUBLIC) ? appConfig.getStorage().getProtectedUri() : appConfig.getStorage().getPublicUri())
-                .resolve(id.toString())
-                .resolve("source" + "." + FilenameUtils.getExtension(file.getOriginalFilename()));
-        Path diskPath = Path.of(appConfig.getStorage().getRootLocation())
-                .resolve(!visibility.equals(ResourceVisibilities.PUBLIC) ? appConfig.getStorage().getProtectedUri() : appConfig.getStorage().getPublicUri())
-                .resolve(id.toString())
-                .resolve("source" + "." + FilenameUtils.getExtension(file.getOriginalFilename()));
-        saveOnDisk(file, diskPath);
-        Resource resource = Resource.builder()
-                .id(id)
-                .xAccelRedirect(xAccelRedirect.toString())
-                .diskPath(diskPath.toString())
-                .size(file.getSize())
-                .visibility(visibility)
-                .type(type)
-                .owner(user)
-                .build();
-        return resourceRepo.save(resource);
-    }
+	@Override
+	public Resource store(
+		MultipartFile file,
+		User user,
+		ResourceVisibilities visibility,
+		ResourceTypes type,
+		Course courseRef) throws AppException
+	{
+		UUID id = UUID.randomUUID();
+		Path xAccelRedirect = Path.of("/").resolve("disk-storage")
+				.resolve(!visibility.equals(ResourceVisibilities.PUBLIC)
+						? appConfig.getStorage().getProtectedUri()
+						: appConfig.getStorage().getPublicUri())
+				.resolve(id.toString())
+				.resolve("source");
+		Path diskPath = Path.of(appConfig.getStorage().getRootLocation())
+				.resolve(!visibility.equals(ResourceVisibilities.PUBLIC)
+						? appConfig.getStorage().getProtectedUri()
+						: appConfig.getStorage().getPublicUri())
+				.resolve(id.toString())
+				.resolve("source");
+		saveOnDisk(file, diskPath);
+		Resource resource = Resource.builder().id(id).xAccelRedirect(xAccelRedirect.toString())
+				.diskPath(diskPath.toString()).size(file.getSize()).visibility(visibility)
+				.type(type).owner(user).course(courseRef).build();
+		return resourceRepo.save(resource);
+	}
 
-    @Override
-    public void validate(MultipartFile file, List<String> expectedTypes, List<String> expectedMimes)
-            throws AppException {
-        try {
-            String contentType = tika.detect(file.getInputStream());
-            if (expectedMimes != null && !expectedMimes.isEmpty()) {
-                if (!expectedMimes.contains(file.getContentType())) {
-                    throw Errors.INVALID_MIME_TYPE;
-                }
-            }
-            if (expectedTypes != null && !expectedTypes.isEmpty()) {
-                boolean isValid = false;
-                for (String expectedType : expectedTypes) {
-                    if (contentType.startsWith(expectedType + "/")) {
-                        isValid = true;
-                        break;
-                    }
-                }
-                if (!isValid) {
-                    throw Errors.INVALID_FILE_TYPE;
-                }
-            }
-        } catch (IOException e) {
-            log.error("Failed to store file", e);
-            throw Errors.STORAGE_FAILURE;
-        }
-    }
+	@Override
+	public void validate(
+		MultipartFile file,
+		List<String> expectedTypes,
+		List<String> expectedMimes) throws AppException
+	{
+		try
+		{
+			String contentType = tika.detect(file.getInputStream());
+			if (expectedMimes != null && !expectedMimes.isEmpty())
+			{
+				if (!expectedMimes.contains(file.getContentType()))
+				{
+					throw Errors.INVALID_MIME_TYPE;
+				}
+			}
+			if (expectedTypes != null && !expectedTypes.isEmpty())
+			{
+				boolean isValid = false;
+				for (String expectedType : expectedTypes)
+				{
+					if (contentType.startsWith(expectedType + "/"))
+					{
+						isValid = true;
+						break;
+					}
+				}
+				if (!isValid)
+				{
+					throw Errors.INVALID_FILE_TYPE;
+				}
+			}
+		}
+		catch (IOException e)
+		{
+			log.error("Failed to store file", e);
+			throw Errors.STORAGE_FAILURE;
+		}
+	}
+
+	@Override
+	public void validateImage(
+		MultipartFile file) throws AppException
+	{
+		validate(file, List.of("image"), List.of("image/jpeg", "image/png"));
+	}
+
+	@Override
+	public void validateVideo(
+		MultipartFile file) throws AppException
+	{
+		validate(file, List.of("video"), List.of("video/mp4"));
+	}
 }

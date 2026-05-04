@@ -1,12 +1,15 @@
 package vn.nlu.huypham.app.payload;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
-public class ApiResponse<T> {
-    int code;
-    String message;
-    T data;
+@SuperBuilder
+@AllArgsConstructor
+public class ApiResponse<T>
+{
+	int code;
+	String message;
+	T data;
 }

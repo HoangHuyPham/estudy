@@ -31,35 +31,37 @@ import lombok.experimental.FieldDefaults;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(uniqueConstraints = {@UniqueConstraint(name = "uk_userme_username", columnNames = {"username"})})
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Include
-    UUID id;
-    String email;
-    String password;
-    String displayName;
-    String username;
-    String avatar;
-    String phone;
-    boolean isDarkMode;
-    @Builder.Default
-    boolean isEnabled = true;
-    @Builder.Default
-    boolean isAccountNonLocked = true;
+@Table(uniqueConstraints =
+{ @UniqueConstraint(name = "uk_userme_username", columnNames =
+{ "username" }) })
+public class User
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Include
+	UUID id;
+	String email;
+	String password;
+	String displayName;
+	String username;
+	String avatar;
+	String phone;
+	boolean isDarkMode;
+	@Builder.Default
+	boolean isEnabled = true;
+	@Builder.Default
+	boolean isAccountNonLocked = true;
 
-    @ManyToMany
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    Set<Role> roles;
+	@ManyToMany
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	Set<Role> roles;
 
-    @Column(updatable = false)
-    long createdAt;
+	@Column(updatable = false)
+	long createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = Instant.now().getEpochSecond();
-    }
+	@PrePersist
+	protected void onCreate()
+	{
+		this.createdAt = Instant.now().getEpochSecond();
+	}
 }
